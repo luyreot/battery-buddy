@@ -1,5 +1,13 @@
 package com.teoryul.batterybuddy
 
 import android.app.Application
+import com.teoryul.batterybuddy.notification.NotificationUtil.createNotificationChannel
 
-class App : Application()
+class App : Application() {
+
+    override fun onCreate() {
+        super.onCreate()
+
+        createNotificationChannel(this)
+    }
+}

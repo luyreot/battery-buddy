@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Battery Buddy</string>
+
+    <string name="dialog_push_permission_title">Get notified!</string>
+    <string name="dialog_push_permission_content">Please allow the app to send you battery status notifications.</string>
+    <string name="dialog_push_permission_button_allow_text">Allow</string>
+    <string name="dialog_push_permission_button_go_to_settings_text">Go to settings</string>
+
 </resources>
