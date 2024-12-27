@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.common
+package com.teoryul.batterybuddy.ui.composable
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
