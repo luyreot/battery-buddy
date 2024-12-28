@@ -6,4 +6,11 @@
     <string name="dialog_push_permission_button_allow_text">Allow</string>
     <string name="dialog_push_permission_button_go_to_settings_text">Go to settings</string>
 
+    <string name="notification_title_battery_above_80">Battery level is above 80%</string>
+    <string name="notification_text_battery_above_80">You can stop charging your phone now.</string>
+    <string name="notification_title_battery_below_60">Battery level is below 60%</string>
+    <string name="notification_text_battery_below_60">You can start charging your phone now.</string>
+    <string name="notification_title_battery_below_20">Battery level is below 20%</string>
+    <string name="notification_text_battery_below_20">You should stop using your phone now and start charging it.</string>
+
 </resources>

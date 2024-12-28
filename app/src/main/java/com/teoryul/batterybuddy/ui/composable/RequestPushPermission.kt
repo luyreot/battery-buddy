@@ -12,7 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import com.teoryul.batterybuddy.util.Util.openAppInfoScreen
+import com.teoryul.batterybuddy.util.CommonUtil.openAppInfoScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @OptIn(ExperimentalPermissionsApi::class)
