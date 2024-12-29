@@ -12,6 +12,6 @@ class App : Application() {
 
         SharedPrefs.init(this)
         createNotificationChannel(this)
-//        registerReceiverActionBatteryChanged(this)
+        registerReceiverActionBatteryChanged(this)
     }
 }

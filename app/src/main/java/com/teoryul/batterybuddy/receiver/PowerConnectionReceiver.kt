@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
+import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.model.NotificationType
 import com.teoryul.batterybuddy.util.NotificationUtil.createNotification
 
@@ -41,6 +42,9 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             level * 100 / scale.toFloat()
         } ?: 0f
 
+        BatteryStats.batteryLevel = batteryPct
+        return
+        // TODO finish logic
         if (batteryPct > 60f && batteryPct < 80f) {
             context?.let { createNotification(it, NotificationType.ABOVE_80) }
         }
