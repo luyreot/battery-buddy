@@ -41,7 +41,7 @@ object NotificationUtil {
     }
 
     @SuppressLint("MissingPermission")
-    fun createNotification(
+    fun sendNotification(
         context: Context,
         notificationType: NotificationType
     ): Boolean {
@@ -97,7 +97,7 @@ object NotificationUtil {
         }
 
         with(NotificationManagerCompat.from(context)) {
-            notify(Int.MIN_VALUE, builder.build())
+            notify(notificationType.notificationId, builder.build())
         }
 
         return true

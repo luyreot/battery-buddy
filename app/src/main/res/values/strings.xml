@@ -12,7 +12,11 @@
     <string name="notification_text_battery_below_60">You can start charging your phone now.</string>
     <string name="notification_title_battery_below_20">Battery level is below 20%</string>
     <string name="notification_text_battery_below_20">You should stop using your phone now and start charging it.</string>
-    <string name="notification_action_text_skip_10_pct">Skip next 10%</string>
-    <string name="notification_action_text_skip_5_pct">Skip next 5%</string>
+    <string name="notification_action_text_skip_10_pct">Notify after 10%</string>
+    <string name="notification_action_text_skip_5_pct">Notify after 5%</string>
+    <string name="notification_title_battery_health_overheat">Battery is overheating</string>
+    <string name="notification_text_battery_health_overheat">Stop charging your phone or possibly turn it off in order too cool off the battery.</string>
+    <string name="notification_title_battery_health_overheat_not">Battery is no longer overheating</string>
+    <string name="notification_text_battery_health_overheat_not">You could wait a bit longer or start using your phone again but monitor its temperature.</string>
 
 </resources>

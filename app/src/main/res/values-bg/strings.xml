@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Battery Buddy</string>
+
+    <string name="dialog_push_permission_title">Получавайте известия!</string>
+    <string name="dialog_push_permission_content">Моля, позволете на приложението да ви изпраща известия за състоянието на батерията.</string>
+    <string name="dialog_push_permission_button_allow_text">Позволи</string>
+    <string name="dialog_push_permission_button_go_to_settings_text">Отидете на настройките</string>
+
+    <string name="notification_title_battery_above_80">Нивото на батерията е над 80%</string>
+    <string name="notification_text_battery_above_80">Можете да спрете да зареждате телефона си сега.</string>
+    <string name="notification_title_battery_below_60">Нивото на батерията е под 60%</string>
+    <string name="notification_text_battery_below_60">Можете да започнете да зареждате телефона си сега.</string>
+    <string name="notification_title_battery_below_20">Нивото на батерията е под 20%</string>
+    <string name="notification_text_battery_below_20">Спрете да използвате телефона си сега и да започнете да го зареждате.</string>
+    <string name="notification_action_text_skip_10_pct">Напомни след 10%</string>
+    <string name="notification_action_text_skip_5_pct">Напомни след 5%</string>
+    <string name="notification_title_battery_health_overheat">Батерията прегрява</string>
+    <string name="notification_text_battery_health_overheat">Спрете да зареждате телефона си или евентуално го изключете, за да охладите батерията.</string>
+    <string name="notification_title_battery_health_overheat_not">Батерията вече не прегрява</string>
+    <string name="notification_text_battery_health_overheat_not">Можете да изчакате още малко или да започнете да използвате телефона си отново, но следете температурата му.</string>
+
+</resources>

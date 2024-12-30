@@ -8,7 +8,7 @@ import android.os.Build
 import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.data.SharedPrefs
 import com.teoryul.batterybuddy.model.NotificationType
-import com.teoryul.batterybuddy.util.NotificationUtil.createNotification
+import com.teoryul.batterybuddy.util.NotificationUtil.sendNotification
 
 class PowerConnectionReceiver : BroadcastReceiver() {
 
@@ -24,11 +24,11 @@ class PowerConnectionReceiver : BroadcastReceiver() {
 
         // Charging status
         val chargeStatus: Int = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-        val statusUnknown: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_UNKNOWN
+        //val statusUnknown: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_UNKNOWN
         val statusCharging: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_CHARGING
         val statusDischarging: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_DISCHARGING
         val statusNotCharging: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_NOT_CHARGING
-        val statusFull: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_FULL
+        //val statusFull: Boolean = chargeStatus == BatteryManager.BATTERY_STATUS_FULL
 
         // Charging type
         val chargePlug: Int = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)
@@ -42,72 +42,98 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         }
 
         // Health
-        /*
         val health: Int = intent.getIntExtra(BatteryManager.EXTRA_HEALTH, -1)
-        val healthUnknown: Boolean = health == BatteryManager.BATTERY_HEALTH_UNKNOWN
-        val healthGood: Boolean = health == BatteryManager.BATTERY_HEALTH_GOOD
+        //val healthUnknown: Boolean = health == BatteryManager.BATTERY_HEALTH_UNKNOWN
+        //val healthGood: Boolean = health == BatteryManager.BATTERY_HEALTH_GOOD
         val healthOverheat: Boolean = health == BatteryManager.BATTERY_HEALTH_OVERHEAT
-        val healthDead: Boolean = health == BatteryManager.BATTERY_HEALTH_DEAD
-        val healthOverVoltage: Boolean = health == BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE
-        val healthUnspecifiedFailure: Boolean =
-            health == BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE
-        val healthCold: Boolean = health == BatteryManager.BATTERY_HEALTH_COLD
-        */
+        //val healthDead: Boolean = health == BatteryManager.BATTERY_HEALTH_DEAD
+        //val healthOverVoltage: Boolean = health == BatteryManager.BATTERY_HEALTH_OVER_VOLTAGE
+        //val healthUnspecifiedFailure: Boolean = health == BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE
+        //val healthCold: Boolean = health == BatteryManager.BATTERY_HEALTH_COLD
 
-        val batteryPct: Float = intent.let {
+        val batteryLvl: Float = intent.let {
             val level: Int = it.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
             val scale: Int = it.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
             level * 100 / scale.toFloat()
         }
 
-        BatteryStats.batteryLevel = batteryPct
+        BatteryStats.batteryLvl = batteryLvl
 
-        val batteryPctInt: Int = batteryPct.toInt()
-        val isCharging: Boolean = acCharge || usbCharge || wirelessCharge || dockCharge
+        val batteryLvlInt: Int = batteryLvl.toInt()
+        val isPhonePluggedIn: Boolean = acCharge || usbCharge || wirelessCharge || dockCharge
 
-        val notifyAtPercentage: Int = SharedPrefs.getNotifyAtPercentage()
-        if (notifyAtPercentage != -1) {
-            if (batteryPctInt > notifyAtPercentage) {
-                if (isCharging) {
-                    SharedPrefs.clearNotifyAtPercentage()
-                    SharedPrefs.clearLastNotifiedPercentage()
+        val notifyAtBatteryLvl: Int = SharedPrefs.getNotifyAtBatteryLvl()
+        // Notify at the calculated battery level if it was previously saved
+        if (notifyAtBatteryLvl != -1) {
+            if (batteryLvlInt > notifyAtBatteryLvl) {
+                if (isPhonePluggedIn) {
+                    // Remove cached data if current battery lvl is above the cached one
+                    SharedPrefs.clearNotifyAtBatteryLvl()
+                    SharedPrefs.clearLastNotifiedLvl()
                 } else {
+                    // Wait until current battery level reaches the cached one
                     return
                 }
             } else {
-                SharedPrefs.clearNotifyAtPercentage()
-                SharedPrefs.clearLastNotifiedPercentage()
+                // Battery lvl reached the cached one.
+                // Clear data and continue with the notifications below.
+                SharedPrefs.clearNotifyAtBatteryLvl()
+                SharedPrefs.clearLastNotifiedLvl()
             }
         }
 
-        val lastNotifiedBatteryPct: Int = SharedPrefs.getLastNotifiedPercentage()
-        if (batteryPctInt == lastNotifiedBatteryPct) {
+        val lastNotifiedBatteryLvl: Int = SharedPrefs.getLastNotifiedLvl()
+        // Do not notify if the current battery lvl is the same as the one we previously notified for
+        if (batteryLvlInt == lastNotifiedBatteryLvl) {
             return
         } else {
-            SharedPrefs.clearLastNotifiedPercentage()
+            SharedPrefs.clearLastNotifiedLvl()
+            if (healthOverheat) {
+                SharedPrefs.setDidNotifyBatteryOverheat(false)
+            }
         }
 
-        if (batteryPctInt >= 80 &&
+        val didNotifyOverheat: Boolean = SharedPrefs.getDidNotifyBatteryOverheat()
+        if (healthOverheat) {
+            if (!didNotifyOverheat && sendNotification(context, NotificationType.OVERHEAT)) {
+                SharedPrefs.setDidNotifyBatteryOverheat(true)
+            }
+        } else {
+            if (didNotifyOverheat) {
+                sendNotification(context, NotificationType.OVERHEAT_NOT)
+            }
+            SharedPrefs.setDidNotifyBatteryOverheat(false)
+        }
+
+        // Notify when:
+        // 1. battery lvl is 80 or more
+        // 2. battery is charging or not charging
+        // 3. phone is plugged in
+        if (batteryLvlInt >= 80 &&
             (statusCharging || statusNotCharging) &&
-            isCharging
+            isPhonePluggedIn
         ) {
-            if (createNotification(context, NotificationType.ABOVE_80)) {
-                SharedPrefs.saveLastNotifiedPercentage(batteryPctInt)
+            if (sendNotification(context, NotificationType.ABOVE_80)) {
+                SharedPrefs.saveLastNotifiedLvl(batteryLvlInt)
             }
             return
         }
 
-        if (batteryPctInt <= 60 &&
+        // Notify when:
+        // 1. battery lvl is 60 or less
+        // 2. battery is charging
+        // 3. phone is not plugged in
+        if (batteryLvlInt <= 60 &&
             statusDischarging &&
-            !isCharging
+            !isPhonePluggedIn
         ) {
-            val didNotify: Boolean = if (batteryPctInt <= 20) {
-                createNotification(context, NotificationType.BELOW_20)
+            val didNotify: Boolean = if (batteryLvlInt <= 20) {
+                sendNotification(context, NotificationType.BELOW_20)
             } else {
-                createNotification(context, NotificationType.BELOW_60)
+                sendNotification(context, NotificationType.BELOW_60)
             }
             if (didNotify) {
-                SharedPrefs.saveLastNotifiedPercentage(batteryPctInt)
+                SharedPrefs.saveLastNotifiedLvl(batteryLvlInt)
             }
             return
         }
@@ -120,14 +146,14 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             return
         }
 
-        val lastNotifiedBatteryPct: Int = SharedPrefs.getLastNotifiedPercentage()
+        val lastNotifiedBatteryPct: Int = SharedPrefs.getLastNotifiedLvl()
 
-        if (intent.action != INTENT_ACTION_SKIP_10_PCT) {
-            SharedPrefs.saveNotifyAtPercentage(lastNotifiedBatteryPct - 10)
+        if (intent.action == INTENT_ACTION_SKIP_10_PCT) {
+            SharedPrefs.saveNotifyAtBatteryLvl(lastNotifiedBatteryPct - 10)
             return
         }
 
-        SharedPrefs.saveNotifyAtPercentage(lastNotifiedBatteryPct - 5)
+        SharedPrefs.saveNotifyAtBatteryLvl(lastNotifiedBatteryPct - 5)
     }
 
     companion object {
