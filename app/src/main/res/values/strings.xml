@@ -12,5 +12,7 @@
     <string name="notification_text_battery_below_60">You can start charging your phone now.</string>
     <string name="notification_title_battery_below_20">Battery level is below 20%</string>
     <string name="notification_text_battery_below_20">You should stop using your phone now and start charging it.</string>
+    <string name="notification_action_text_skip_10_pct">Skip next 10%</string>
+    <string name="notification_action_text_skip_5_pct">Skip next 5%</string>
 
 </resources>

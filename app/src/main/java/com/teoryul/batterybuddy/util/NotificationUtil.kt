@@ -15,16 +15,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.teoryul.batterybuddy.R
 import com.teoryul.batterybuddy.model.NotificationType
+import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver
 import com.teoryul.batterybuddy.ui.activity.MainActivity
-
 
 object NotificationUtil {
 
     const val CHANNEL_NAME = "Battery Status"
     const val CHANNEL_DESCRIPTION = "Receive battery status notifications"
     const val CHANNEL_ID = "battery_status"
-
-    private var notificationId: Int = Int.MIN_VALUE
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -46,8 +44,8 @@ object NotificationUtil {
     fun createNotification(
         context: Context,
         notificationType: NotificationType
-    ) {
-        if (!hasNotificationPermission(context)) return
+    ): Boolean {
+        if (!hasNotificationPermission(context)) return false
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_notification)
@@ -55,6 +53,7 @@ object NotificationUtil {
             .setContentText(context.getString(notificationType.textStringRes))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setAllowSystemGeneratedContextualActions(false)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context,
@@ -66,11 +65,42 @@ object NotificationUtil {
                 )
             )
             .setAutoCancel(true)
-            .build()
+
+        if (notificationType == NotificationType.BELOW_60) {
+            val skip10PctPendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                Intent(context, PowerConnectionReceiver::class.java).apply {
+                    action = PowerConnectionReceiver.INTENT_ACTION_SKIP_10_PCT
+                },
+                PendingIntent.FLAG_IMMUTABLE
+            )
+            val skip5PctPendingIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                Intent(context, PowerConnectionReceiver::class.java).apply {
+                    action = PowerConnectionReceiver.INTENT_ACTION_SKIP_5_PCT
+                },
+                PendingIntent.FLAG_IMMUTABLE
+            )
+
+            builder.addAction(
+                R.drawable.ic_skip_next,
+                context.getString(R.string.notification_action_text_skip_10_pct),
+                skip10PctPendingIntent
+            )
+            builder.addAction(
+                R.drawable.ic_skip_next,
+                context.getString(R.string.notification_action_text_skip_5_pct),
+                skip5PctPendingIntent
+            )
+        }
 
         with(NotificationManagerCompat.from(context)) {
-            notify(notificationId++, builder)
+            notify(Int.MIN_VALUE, builder.build())
         }
+
+        return true
     }
 
     private fun hasNotificationPermission(context: Context): Boolean {

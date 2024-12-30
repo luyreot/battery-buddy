@@ -25,6 +25,17 @@
             </intent-filter>
         </activity>
 
+        <receiver
+            android:name=".receiver.PowerConnectionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="INTENT_ACTION_SKIP_10_PCT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="INTENT_ACTION_SKIP_5_PCT" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
