@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntSize
-import com.teoryul.batterybuddy.ui.composable.batterylevel.animating.WaterLevelState
 import com.teoryul.batterybuddy.ui.composable.batterylevel.animating.waveProgressAsState
 import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.canvas.drawTextWithBlendMode
 import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.canvas.drawWaves
@@ -39,7 +38,7 @@ import com.teoryul.batterybuddy.ui.theme.Water
 fun WaterDropLayout(
     modifier: Modifier = Modifier,
     waveDurationInMills: Long = 6000L,
-    waterLevelState: WaterLevelState,
+    batteryLvl: Float,
     onWavesClick: () -> Unit,
     content: () -> WaterDropText
 ) {
@@ -50,7 +49,7 @@ fun WaterDropLayout(
         waveDurationInMills = waveDurationInMills,
         waveParams = waveParams,
         animations = animations,
-        waterLevelState = waterLevelState,
+        batteryLvl = batteryLvl,
         onWavesClick = onWavesClick,
         content = content
     )
@@ -62,13 +61,13 @@ fun WaterLevelDrawing(
     waveDurationInMills: Long,
     waveParams: WaveParams,
     animations: MutableList<State<Float>>,
-    waterLevelState: WaterLevelState,
+    batteryLvl: Float,
     onWavesClick: () -> Unit,
     content: () -> WaterDropText
 ) {
     val waveDuration by rememberSaveable { mutableLongStateOf(waveDurationInMills) }
     val waveProgress by waveProgressAsState(
-        timerState = waterLevelState,
+        batteryLvl = batteryLvl,
         timerDurationInMillis = waveDuration
     )
     WavesDrawing(

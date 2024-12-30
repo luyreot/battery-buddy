@@ -3,9 +3,7 @@ package com.teoryul.batterybuddy.ui.composable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -13,7 +11,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.teoryul.batterybuddy.ui.composable.batterylevel.animating.WaterLevelState
+import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.WaterDropLayout
 import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaterDropText
 import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaveParams
@@ -23,17 +21,13 @@ fun MainScreen(modifier: Modifier = Modifier) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val waveGap = 30
     val points = remember { screenWidth / waveGap }
-    var waterLevelState by remember { mutableStateOf(WaterLevelState.StartReady) }
+    val batteryLvl by remember { BatteryStats.batteryLvl }
     WaterDropLayout(
         modifier = Modifier.fillMaxSize(), // Not using the modifier param in order to fill the whole screen
-        waveDurationInMills = 5000L,
-        waterLevelState = waterLevelState,
+        waveDurationInMills = 1500L, // TODO calculate the speed based on the missing battery %
+        batteryLvl = batteryLvl,
         onWavesClick = {
-            waterLevelState = if (waterLevelState == WaterLevelState.Animating) {
-                WaterLevelState.StartReady
-            } else {
-                WaterLevelState.Animating
-            }
+            // Not used
         }
     ) {
         WaterDropText(
@@ -42,7 +36,7 @@ fun MainScreen(modifier: Modifier = Modifier) {
             textStyle = TextStyle(
                 color = Color.Black,
                 fontSize = 80.sp,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.Bold
             ),
             waveParams = WaveParams(
                 pointsQuantity = points,

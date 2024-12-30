@@ -57,7 +57,7 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             level * 100 / scale.toFloat()
         }
 
-        BatteryStats.batteryLvl = batteryLvl
+        BatteryStats.batteryLvl.floatValue = batteryLvl
 
         val batteryLvlInt: Int = batteryLvl.toInt()
         val isPhonePluggedIn: Boolean = acCharge || usbCharge || wirelessCharge || dockCharge

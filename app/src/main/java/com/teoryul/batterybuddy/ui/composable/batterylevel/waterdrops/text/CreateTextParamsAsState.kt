@@ -23,8 +23,9 @@ fun createTextParamsAsState(
     val textMeasurer = rememberTextMeasurer(100)
     val unitTextStyle = remember(textStyle) { textStyle.copy(fontSize = textStyle.fontSize / 2) }
 
+    // TODO controls the text
     val text by remember(waveProgress) {
-        derivedStateOf { (waveProgress * 100).toInt().toString() }
+        derivedStateOf { (100f - waveProgress * 100f).toInt().toString() }
     }
 
     val textProgressSize by remember(text) {
