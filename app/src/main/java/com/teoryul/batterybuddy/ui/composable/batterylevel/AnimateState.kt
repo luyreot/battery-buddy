@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.animating
+package com.teoryul.batterybuddy.ui.composable.batterylevel
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -10,7 +10,7 @@ import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 
 @Composable
-fun waveProgressAsState(
+fun lvlProgressAsState(
     batteryLvl: Float,
     timerDurationInMillis: Long
 ): State<Float> {

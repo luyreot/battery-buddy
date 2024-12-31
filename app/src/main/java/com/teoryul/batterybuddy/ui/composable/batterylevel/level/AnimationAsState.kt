@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave
+package com.teoryul.batterybuddy.ui.composable.batterylevel.level
 
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat

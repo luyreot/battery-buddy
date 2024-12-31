@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.text
+package com.teoryul.batterybuddy.ui.composable.batterylevel.text
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset

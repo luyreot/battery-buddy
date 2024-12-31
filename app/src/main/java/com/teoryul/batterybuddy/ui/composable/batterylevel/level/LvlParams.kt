@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave
+package com.teoryul.batterybuddy.ui.composable.batterylevel.level
 
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
@@ -6,17 +6,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 
 @Stable
-data class WaterDropText(
+data class BatteryLvlText(
     val modifier: Modifier = Modifier,
     val align: Alignment,
     val textStyle: TextStyle,
-    val waveParams: WaveParams
+    val lvlParams: LvlParams
 )
 
 @Stable
-data class WaveParams(
+data class LvlParams(
     val pointsQuantity: Int = 10,
-    val maxWaveHeight: Float = 20f,
+    val maxHeight: Float = 20f,
     val bufferY: Float = 60f,
     val bufferX: Float = 50f
 )

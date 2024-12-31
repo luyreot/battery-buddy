@@ -1,16 +1,14 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops
+package com.teoryul.batterybuddy.ui.composable.batterylevel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
-import com.teoryul.batterybuddy.ui.composable.batterylevel.Parabola
-import com.teoryul.batterybuddy.ui.composable.batterylevel.PointF
 
 @Composable
 fun createPlottedPointsAsState(
-    waterLevel: Float,
+    batteryLvl: Float,
     containerSize: IntSize,
     levelState: LevelState,
     position: Offset,
@@ -36,12 +34,12 @@ fun createPlottedPointsAsState(
     val points = remember(spacing, containerSize) {
         derivedStateOf {
             (-spacing..containerSize.width + spacing step spacing).map { x ->
-                PointF(x.toFloat(), waterLevel)
+                PointF(x.toFloat(), batteryLvl)
             }
         }
     }
 
-    val plottedPoints = remember(waterLevel, levelState) {
+    val plottedPoints = remember(batteryLvl, levelState) {
         when (levelState) {
             is LevelState.FlowsAround -> {
                 val point1 = PointF(
@@ -56,28 +54,28 @@ fun createPlottedPointsAsState(
                 val p = Parabola(point1, point2, point3)
                 points.value.forEach {
                     val pointAtParabola = p.calculate(it.x)
-                    if (pointAtParabola > waterLevel) {
-                        it.y = waterLevel
+                    if (pointAtParabola > batteryLvl) {
+                        it.y = batteryLvl
                     } else {
                         it.y = pointAtParabola
                     }
                 }
             }
 
-            is LevelState.WaveIsComing -> {
+            is LevelState.LevelIsComing -> {
                 val centerPointValue =
                     parabola.calculate(position.x + elementSize.width / 2)
                 points.value.forEach {
                     val pr = parabola.calculate(it.x)
-                    if (centerPointValue > waterLevel) {
-                        if (pr < waterLevel) {
-                            it.y = waterLevel
+                    if (centerPointValue > batteryLvl) {
+                        if (pr < batteryLvl) {
+                            it.y = batteryLvl
                         } else {
                             it.y = pr
                         }
                     } else {
-                        if (pr > waterLevel) {
-                            it.y = waterLevel
+                        if (pr > batteryLvl) {
+                            it.y = batteryLvl
                         } else {
                             it.y = pr
                         }
@@ -87,7 +85,7 @@ fun createPlottedPointsAsState(
 
             LevelState.PlainMoving -> {
                 points.value.map {
-                    it.y = waterLevel
+                    it.y = batteryLvl
                 }
             }
         }

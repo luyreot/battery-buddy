@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.canvas
+package com.teoryul.batterybuddy.ui.composable.batterylevel.canvas
 
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -8,12 +8,12 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.text.drawText
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.Paths
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.text.TextParams
+import com.teoryul.batterybuddy.ui.composable.batterylevel.Paths
+import com.teoryul.batterybuddy.ui.composable.batterylevel.text.TextParams
 import com.teoryul.batterybuddy.ui.theme.Blue
-import com.teoryul.batterybuddy.ui.theme.Water
+import com.teoryul.batterybuddy.ui.theme.BatteryLvlBackground
 
-fun DrawScope.drawWaves(
+fun DrawScope.drawLevels(
     paths: Paths
 ) {
     drawIntoCanvas {
@@ -52,7 +52,7 @@ fun DrawScope.drawTextWithBlendMode(
 
     drawPath(
         path = mask,
-        color = Water,
+        color = BatteryLvlBackground,
         blendMode = BlendMode.SrcIn
     )
 }

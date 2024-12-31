@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.text
+package com.teoryul.batterybuddy.ui.composable.batterylevel.text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -12,20 +12,20 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import com.teoryul.batterybuddy.ui.composable.batterylevel.toPx
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.ElementParams
+import com.teoryul.batterybuddy.ui.composable.batterylevel.ElementParams
 
 @Composable
 fun createTextParamsAsState(
     textStyle: TextStyle,
-    waveProgress: Float,
+    lvlProgress: Float,
     elementParams: ElementParams
 ): State<TextParams> {
     val textMeasurer = rememberTextMeasurer(100)
     val unitTextStyle = remember(textStyle) { textStyle.copy(fontSize = textStyle.fontSize / 2) }
 
     // TODO controls the text
-    val text by remember(waveProgress) {
-        derivedStateOf { (100f - waveProgress * 100f).toInt().toString() }
+    val text by remember(lvlProgress) {
+        derivedStateOf { (100f - lvlProgress * 100f).toInt().toString() }
     }
 
     val textProgressSize by remember(text) {
@@ -72,7 +72,7 @@ fun createTextParamsAsState(
             text = text,
             textMeasurer = textMeasurer
         ),
-        key1 = waveProgress,
+        key1 = lvlProgress,
         key2 = textOffset,
         key3 = textStyle
     ) {

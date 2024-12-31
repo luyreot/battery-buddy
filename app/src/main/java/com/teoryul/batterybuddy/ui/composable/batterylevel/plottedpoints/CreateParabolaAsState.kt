@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.plottedpoints
+package com.teoryul.batterybuddy.ui.composable.batterylevel.plottedpoints
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.animateFloatAsState
@@ -13,49 +13,49 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.IntSize
 import com.teoryul.batterybuddy.ui.composable.batterylevel.Parabola
 import com.teoryul.batterybuddy.ui.composable.batterylevel.PointF
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.LevelState
+import com.teoryul.batterybuddy.ui.composable.batterylevel.LevelState
 
 @Composable
 fun createParabolaAsState(
     position: Offset,
     elementSize: IntSize,
-    waterLevel: Float,
+    batteryLvl: Float,
     buffer: Float,
     levelState: LevelState,
-    dropWaterDuration: Int
+    lvlDropDuration: Int
 ): State<Parabola> {
     val parabolaHeightMultiplier = animateFloatAsState(
-        targetValue = if (levelState == LevelState.WaveIsComing) 0f else -1f,
+        targetValue = if (levelState == LevelState.LevelIsComing) 0f else -1f,
         animationSpec = tween(
-            durationMillis = dropWaterDuration,
+            durationMillis = lvlDropDuration,
             easing = { OvershootInterpolator(6f).getInterpolation(it) }
         ),
         label = "parabolaHeightMultiplier"
     )
 
-    val point1 by remember(position, elementSize, waterLevel, parabolaHeightMultiplier) {
+    val point1 by remember(position, elementSize, batteryLvl, parabolaHeightMultiplier) {
         mutableStateOf(
             PointF(
                 position.x,
-                waterLevel + (elementSize.height / 3f + buffer / 5) * parabolaHeightMultiplier.value
+                batteryLvl + (elementSize.height / 3f + buffer / 5) * parabolaHeightMultiplier.value
             )
         )
     }
 
-    val point2 by remember(position, elementSize, waterLevel, parabolaHeightMultiplier) {
+    val point2 by remember(position, elementSize, batteryLvl, parabolaHeightMultiplier) {
         mutableStateOf(
             PointF(
                 position.x + elementSize.width,
-                waterLevel + (elementSize.height / 3f + buffer / 5) * parabolaHeightMultiplier.value
+                batteryLvl + (elementSize.height / 3f + buffer / 5) * parabolaHeightMultiplier.value
             )
         )
     }
 
-    val point3 by remember(position, elementSize, parabolaHeightMultiplier, waterLevel) {
+    val point3 by remember(position, elementSize, parabolaHeightMultiplier, batteryLvl) {
         mutableStateOf(
             PointF(
                 position.x + elementSize.width / 2,
-                waterLevel + (elementSize.height / 3f + buffer) * parabolaHeightMultiplier.value
+                batteryLvl + (elementSize.height / 3f + buffer) * parabolaHeightMultiplier.value
             )
         )
     }

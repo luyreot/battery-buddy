@@ -4,24 +4,23 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.TextUnit
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.ElementParams
 import kotlin.math.pow
 
-fun isAboveElement(waterLevel: Int, bufferY: Float, position: Offset) =
-    waterLevel < position.y - bufferY
+fun isAboveElement(batteryLvl: Int, bufferY: Float, position: Offset) =
+    batteryLvl < position.y - bufferY
 
 fun atElementLevel(
-    waterLevel: Int,
+    batteryLvl: Int,
     buffer: Float,
     elementParams: ElementParams,
-) = (waterLevel >= (elementParams.position.y - buffer)) &&
-        (waterLevel < (elementParams.position.y + elementParams.size.height * 0.33))
+) = (batteryLvl >= (elementParams.position.y - buffer)) &&
+        (batteryLvl < (elementParams.position.y + elementParams.size.height * 0.33))
 
-fun isWaterFalls(
-    waterLevel: Int,
+fun isLevelDropping(
+    batteryLvl: Int,
     elementParams: ElementParams,
-) = waterLevel >= (elementParams.position.y + elementParams.size.height * 0.33) &&
-        waterLevel <= (elementParams.position.y + elementParams.size.height)
+) = batteryLvl >= (elementParams.position.y + elementParams.size.height * 0.33) &&
+        batteryLvl <= (elementParams.position.y + elementParams.size.height)
 
 @Stable
 data class PointF(

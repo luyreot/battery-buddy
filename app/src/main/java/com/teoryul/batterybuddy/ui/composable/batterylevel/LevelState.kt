@@ -1,42 +1,39 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops
+package com.teoryul.batterybuddy.ui.composable.batterylevel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import com.teoryul.batterybuddy.ui.composable.batterylevel.atElementLevel
-import com.teoryul.batterybuddy.ui.composable.batterylevel.isAboveElement
-import com.teoryul.batterybuddy.ui.composable.batterylevel.isWaterFalls
 
 @Composable
 fun createLevelAsState(
-    waterLevelProvider: () -> Int,
+    batteryLvlProvider: () -> Int,
     bufferY: Float,
     elementParams: ElementParams
 ): MutableState<LevelState> {
-    return remember(elementParams.position, waterLevelProvider()) {
+    return remember(elementParams.position, batteryLvlProvider()) {
         when {
-            isAboveElement(waterLevelProvider(), bufferY, elementParams.position) -> {
+            isAboveElement(batteryLvlProvider(), bufferY, elementParams.position) -> {
                 mutableStateOf(LevelState.PlainMoving)
             }
 
             atElementLevel(
-                waterLevelProvider(),
+                batteryLvlProvider(),
                 bufferY,
                 elementParams
             ) -> {
                 mutableStateOf(LevelState.FlowsAround)
             }
 
-            isWaterFalls(
-                waterLevelProvider(),
+            isLevelDropping(
+                batteryLvlProvider(),
                 elementParams
             ) -> {
-                mutableStateOf(LevelState.WaveIsComing)
+                mutableStateOf(LevelState.LevelIsComing)
             }
 
             else -> {
-                mutableStateOf(LevelState.WaveIsComing)
+                mutableStateOf(LevelState.LevelIsComing)
             }
         }
     }
@@ -45,5 +42,5 @@ fun createLevelAsState(
 sealed class LevelState {
     data object PlainMoving : LevelState()
     data object FlowsAround : LevelState()
-    data object WaveIsComing : LevelState()
+    data object LevelIsComing : LevelState()
 }

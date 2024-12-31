@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops
+package com.teoryul.batterybuddy.ui.composable.batterylevel
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -25,90 +25,87 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntSize
-import com.teoryul.batterybuddy.ui.composable.batterylevel.animating.waveProgressAsState
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.canvas.drawTextWithBlendMode
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.canvas.drawWaves
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.text.createTextParamsAsState
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaterDropText
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaveParams
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.createAnimationsAsState
-import com.teoryul.batterybuddy.ui.theme.Water
+import com.teoryul.batterybuddy.ui.composable.batterylevel.canvas.drawLevels
+import com.teoryul.batterybuddy.ui.composable.batterylevel.canvas.drawTextWithBlendMode
+import com.teoryul.batterybuddy.ui.composable.batterylevel.text.createTextParamsAsState
+import com.teoryul.batterybuddy.ui.composable.batterylevel.level.BatteryLvlText
+import com.teoryul.batterybuddy.ui.composable.batterylevel.level.LvlParams
+import com.teoryul.batterybuddy.ui.composable.batterylevel.level.createAnimationsAsState
+import com.teoryul.batterybuddy.ui.theme.BatteryLvlBackground
 
 @Composable
-fun WaterDropLayout(
+fun BatteryLvlLayout(
     modifier: Modifier = Modifier,
-    waveDurationInMills: Long = 6000L,
+    lvlDropDurationInMills: Long = 6000L,
     batteryLvl: Float,
-    onWavesClick: () -> Unit,
-    content: () -> WaterDropText
+    onClick: () -> Unit,
+    content: () -> BatteryLvlText
 ) {
-    val waveParams = remember { content().waveParams }
-    val animations = createAnimationsAsState(pointsQuantity = waveParams.pointsQuantity)
-    WaterLevelDrawing(
+    val lvlParams = remember { content().lvlParams }
+    val animations = createAnimationsAsState(pointsQuantity = lvlParams.pointsQuantity)
+    BatteryLvlDrawing(
         modifier = modifier,
-        waveDurationInMills = waveDurationInMills,
-        waveParams = waveParams,
+        lvlDropDurationInMills = lvlDropDurationInMills,
+        lvlParams = lvlParams,
         animations = animations,
         batteryLvl = batteryLvl,
-        onWavesClick = onWavesClick,
+        onClick = onClick,
         content = content
     )
 }
 
 @Composable
-fun WaterLevelDrawing(
+fun BatteryLvlDrawing(
     modifier: Modifier = Modifier,
-    waveDurationInMills: Long,
-    waveParams: WaveParams,
+    lvlDropDurationInMills: Long,
+    lvlParams: LvlParams,
     animations: MutableList<State<Float>>,
     batteryLvl: Float,
-    onWavesClick: () -> Unit,
-    content: () -> WaterDropText
+    onClick: () -> Unit,
+    content: () -> BatteryLvlText
 ) {
-    val waveDuration by rememberSaveable { mutableLongStateOf(waveDurationInMills) }
-    val waveProgress by waveProgressAsState(
+    val lvlDropDuration by rememberSaveable { mutableLongStateOf(lvlDropDurationInMills) }
+    val lvlProgress by lvlProgressAsState(
         batteryLvl = batteryLvl,
-        timerDurationInMillis = waveDuration
+        timerDurationInMillis = lvlDropDuration
     )
-    WavesDrawing(
+    LvlDrawing(
         modifier = modifier,
-        waveDuration = waveDuration,
+        lvlDuration = lvlDropDuration,
         animations = animations,
-        waveProgress = waveProgress,
-        waveParams = waveParams,
-        onWavesClick = onWavesClick,
+        lvlProgress = lvlProgress,
+        lvlParams = lvlParams,
+        onClick = onClick,
         content = content
     )
 }
 
 @Composable
-fun WavesDrawing(
+fun LvlDrawing(
     modifier: Modifier = Modifier,
-    waveDuration: Long,
-    waveParams: WaveParams,
+    lvlDuration: Long,
+    lvlParams: LvlParams,
     animations: MutableList<State<Float>>,
-    waveProgress: Float,
-    onWavesClick: () -> Unit,
-    content: () -> WaterDropText
+    lvlProgress: Float,
+    onClick: () -> Unit,
+    content: () -> BatteryLvlText
 ) {
     val elementParams by remember { mutableStateOf(ElementParams()) }
     var containerSize by remember { mutableStateOf(IntSize(0, 0)) }
 
-    val dropWaterDuration = rememberDropWaterDuration(
+    val lvlDropDuration = rememberBatteryLvlDuration(
         elementSize = elementParams.size,
         containerSize = containerSize,
-        duration = waveDuration
+        duration = lvlDuration
     )
 
-    val waterLevel by remember(waveProgress, containerSize.height) {
-        derivedStateOf {
-            (waveProgress * containerSize.height).toInt()
-        }
+    val batteryLvl by remember(lvlProgress, containerSize.height) {
+        derivedStateOf { (lvlProgress * containerSize.height).toInt() }
     }
 
     val levelState = createLevelAsState(
-        waterLevelProvider = { waterLevel },
-        bufferY = waveParams.bufferY,
+        batteryLvlProvider = { batteryLvl },
+        bufferY = lvlParams.bufferY,
         elementParams = elementParams
     )
 
@@ -116,29 +113,29 @@ fun WavesDrawing(
         containerSize = containerSize,
         elementParams = elementParams,
         levelState = levelState.value,
-        waterLevelProvider = { waterLevel.toFloat() },
-        dropWaterDuration = dropWaterDuration,
+        batteryLvlProvider = { batteryLvl.toFloat() },
+        lvlDropDuration = lvlDropDuration,
         animations = animations,
-        waveParams = waveParams
+        lvlParams = lvlParams
     )
 
     val textParams = createTextParamsAsState(
         textStyle = content().textStyle,
-        waveProgress = waveProgress,
+        lvlProgress = lvlProgress,
         elementParams = elementParams
     )
 
     Canvas(
         modifier = Modifier
-            .background(Water)
+            .background(BatteryLvlBackground)
             .fillMaxSize()
     ) {
-        drawWaves(paths)
+        drawLevels(paths)
     }
 
     Box(
         modifier = modifier
-            .clickable(onClick = onWavesClick)
+            .clickable(onClick = onClick)
             .onGloballyPositioned { containerSize = IntSize(it.size.width, it.size.height) }
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
             .drawWithContent {

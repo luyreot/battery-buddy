@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops
+package com.teoryul.batterybuddy.ui.composable.batterylevel
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
@@ -10,55 +10,51 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.unit.IntSize
-import com.teoryul.batterybuddy.ui.composable.batterylevel.PointF
-import com.teoryul.batterybuddy.ui.composable.batterylevel.copy
-import com.teoryul.batterybuddy.ui.composable.batterylevel.lerpF
-import com.teoryul.batterybuddy.ui.composable.batterylevel.parabolaInterpolation
-import com.teoryul.batterybuddy.ui.composable.batterylevel.toBoolean
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.plottedpoints.createInitialMultipliersAsState
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.plottedpoints.createParabolaAsState
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaveParams
+import com.teoryul.batterybuddy.ui.composable.batterylevel.level.LvlParams
+import com.teoryul.batterybuddy.ui.composable.batterylevel.plottedpoints.createInitialMultipliersAsState
+import com.teoryul.batterybuddy.ui.composable.batterylevel.plottedpoints.createParabolaAsState
 
 @Composable
 fun createPathsAsState(
     levelState: LevelState,
     containerSize: IntSize,
-    waterLevelProvider: () -> Float,
-    dropWaterDuration: Int,
+    batteryLvlProvider: () -> Float,
+    lvlDropDuration: Int,
     animations: MutableList<State<Float>>,
-    waveParams: WaveParams,
+    lvlParams: LvlParams,
     elementParams: ElementParams
 ): Paths {
     val parabola = createParabolaAsState(
         position = elementParams.position,
         elementSize = elementParams.size,
-        waterLevel = waterLevelProvider(),
-        buffer = waveParams.bufferY,
-        dropWaterDuration = dropWaterDuration,
+        batteryLvl = batteryLvlProvider(),
+        buffer = lvlParams.bufferY,
+        lvlDropDuration = lvlDropDuration,
         levelState = levelState
     )
 
     val plottedPoints = createPlottedPointsAsState(
-        waterLevel = waterLevelProvider(),
+        batteryLvl = batteryLvlProvider(),
         containerSize = containerSize,
         levelState = levelState,
         position = elementParams.position,
-        buffer = waveParams.bufferY,
+        buffer = lvlParams.bufferY,
         elementSize = elementParams.size,
         parabola = parabola.value,
-        pointsQuantity = waveParams.pointsQuantity
+        pointsQuantity = lvlParams.pointsQuantity
     )
 
     val initialMultipliers =
-        createInitialMultipliersAsState(pointsQuantity = waveParams.pointsQuantity)
-    val waveMultiplier = animateFloatAsState(
-        targetValue = if (levelState == LevelState.WaveIsComing) 1f else 0f,
+        createInitialMultipliersAsState(pointsQuantity = lvlParams.pointsQuantity)
+
+    val levelMultiplier = animateFloatAsState(
+        targetValue = if (levelState == LevelState.LevelIsComing) 1f else 0f,
         animationSpec = keyframes {
-            durationMillis = dropWaterDuration
-            (0.7f).at((0.2f * dropWaterDuration).toInt())
-            (0.8f).at((0.4f * dropWaterDuration).toInt())
+            durationMillis = lvlDropDuration
+            (0.7f).at((0.2f * lvlDropDuration).toInt())
+            (0.8f).at((0.4f * lvlDropDuration).toInt())
         },
-        label = "waveMultiplier"
+        label = "levelMultiplier"
     )
 
     val paths by remember {
@@ -68,10 +64,10 @@ fun createPathsAsState(
     createPaths(
         animations,
         initialMultipliers,
-        waveParams.maxWaveHeight,
+        lvlParams.maxHeight,
         levelState,
-        waveParams.bufferX,
-        parabolaInterpolation(waveMultiplier.value),
+        lvlParams.bufferX,
+        parabolaInterpolation(levelMultiplier.value),
         containerSize,
         plottedPoints,
         paths,
@@ -86,7 +82,7 @@ fun createPaths(
     maxHeight: Float,
     levelState: LevelState,
     bufferX: Float,
-    waveMultiplier: Float = 1f,
+    levelMultiplier: Float = 1f,
     containerSize: IntSize,
     points: List<PointF>,
     paths: Paths,
@@ -94,10 +90,10 @@ fun createPaths(
 ): Paths {
 
     for (i in 0..1) {
-        var wavePoints = points.copy()
+        var levelPoints = points.copy()
         val divider = i % 2
-        wavePoints = addWaves(
-            points = wavePoints,
+        levelPoints = addLevel(
+            points = levelPoints,
             animations = animations,
             initialMultipliers = initialMultipliers,
             maxHeight = maxHeight,
@@ -105,29 +101,29 @@ fun createPaths(
             levelState = levelState,
             position = elementParams.position,
             elementSize = elementParams.size,
-            waveMultiplier = if (divider == 0) waveMultiplier / 2 else waveMultiplier,
+            levelMultiplier = if (divider == 0) levelMultiplier / 2 else levelMultiplier,
             bufferX = bufferX,
         )
         paths.pathList[i].reset()
-        paths.pathList[i] = createPath(containerSize, wavePoints, paths.pathList[i])
+        paths.pathList[i] = createPath(containerSize, levelPoints, paths.pathList[i])
     }
     return paths
 }
 
 fun createPath(
     containerSize: IntSize,
-    wavePoints: List<PointF>,
+    levelPoints: List<PointF>,
     path: Path
 ): Path {
     path.moveTo(0f, containerSize.height.toFloat())
-    wavePoints.forEach {
+    levelPoints.forEach {
         path.lineTo(it.x, it.y)
     }
     path.lineTo(containerSize.width.toFloat(), containerSize.height.toFloat())
     return path
 }
 
-fun addWaves(
+fun addLevel(
     points: List<PointF>,
     animations: MutableList<State<Float>>,
     initialMultipliers: MutableList<Float>,
@@ -137,7 +133,7 @@ fun addWaves(
     position: Offset,
     elementSize: IntSize,
     bufferX: Float,
-    waveMultiplier: Float
+    levelMultiplier: Float
 ): List<PointF> {
     val elementRangeX = (position.x - bufferX)..(position.x + elementSize.width + bufferX)
     points.forEachIndexed { index, pointF ->
@@ -151,31 +147,31 @@ fun addWaves(
         } else {
             initialMultipliers.size - index - 1
         }
-        var waveHeight = calculateWaveHeight(
+        var levelHeight = calculateLevelHeight(
             animations[newIndex].value,
             initialMultipliers[initialMultipliersNewIndex],
             maxHeight
         )
 
-        if (levelState is LevelState.WaveIsComing && pointF.x in elementRangeX) {
-            waveHeight *= waveMultiplier
+        if (levelState is LevelState.LevelIsComing && pointF.x in elementRangeX) {
+            levelHeight *= levelMultiplier
         }
 
-        pointF.y -= waveHeight
+        pointF.y -= levelHeight
     }
     return points
 }
 
-private fun calculateWaveHeight(
+private fun calculateLevelHeight(
     currentSize: Float,
     initialMultipliers: Float,
     maxHeight: Float
 ): Float {
-    var waveHeightPercent = initialMultipliers + currentSize
-    if (waveHeightPercent > 1.0f) {
-        val diff = waveHeightPercent - 1.0f
-        waveHeightPercent = 1.0f - diff
+    var levelHeightPercent = initialMultipliers + currentSize
+    if (levelHeightPercent > 1.0f) {
+        val diff = levelHeightPercent - 1.0f
+        levelHeightPercent = 1.0f - diff
     }
 
-    return lerpF(maxHeight, 0f, waveHeightPercent)
+    return lerpF(maxHeight, 0f, levelHeightPercent)
 }

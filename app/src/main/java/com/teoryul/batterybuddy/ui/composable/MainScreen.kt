@@ -12,25 +12,25 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.teoryul.batterybuddy.data.BatteryStats
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.WaterDropLayout
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaterDropText
-import com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.wave.WaveParams
+import com.teoryul.batterybuddy.ui.composable.batterylevel.BatteryLvlLayout
+import com.teoryul.batterybuddy.ui.composable.batterylevel.level.BatteryLvlText
+import com.teoryul.batterybuddy.ui.composable.batterylevel.level.LvlParams
 
 @Composable
 fun MainScreen(modifier: Modifier = Modifier) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    val waveGap = 30
-    val points = remember { screenWidth / waveGap }
+    val levelGap = 30
+    val points = remember { screenWidth / levelGap }
     val batteryLvl by remember { BatteryStats.batteryLvl }
-    WaterDropLayout(
+    BatteryLvlLayout(
         modifier = Modifier.fillMaxSize(), // Not using the modifier param in order to fill the whole screen
-        waveDurationInMills = 1500L, // TODO calculate the speed based on the missing battery %
+        lvlDropDurationInMills = 1500L, // TODO calculate the speed based on the missing battery %
         batteryLvl = batteryLvl,
-        onWavesClick = {
+        onClick = {
             // Not used
         }
     ) {
-        WaterDropText(
+        BatteryLvlText(
             modifier = Modifier,
             align = Alignment.Center,
             textStyle = TextStyle(
@@ -38,9 +38,9 @@ fun MainScreen(modifier: Modifier = Modifier) {
                 fontSize = 80.sp,
                 fontWeight = FontWeight.Bold
             ),
-            waveParams = WaveParams(
+            lvlParams = LvlParams(
                 pointsQuantity = points,
-                maxWaveHeight = 64f // TODO control the wave height
+                maxHeight = 64f // TODO control the lvl height
             )
         )
     }

@@ -1,4 +1,4 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops.plottedpoints
+package com.teoryul.batterybuddy.ui.composable.batterylevel.plottedpoints
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

@@ -1,20 +1,20 @@
-package com.teoryul.batterybuddy.ui.composable.batterylevel.waterdrops
+package com.teoryul.batterybuddy.ui.composable.batterylevel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.IntSize
 
 @Composable
-fun rememberDropWaterDuration(
+fun rememberBatteryLvlDuration(
     elementSize: IntSize,
     containerSize: IntSize,
     duration: Long
 ): Int {
     return remember(elementSize, containerSize) {
-        if ((elementSize.height == 0) || containerSize.height == 0) {
+        if (elementSize.height == 0 || containerSize.height == 0) {
             0
         } else {
-            (((duration * elementSize.height * 0.66) / (containerSize.height))).toInt()
+            ((duration * elementSize.height * 0.66) / containerSize.height).toInt()
         }
     }
 }
