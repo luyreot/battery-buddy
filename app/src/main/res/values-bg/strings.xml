@@ -6,6 +6,9 @@
     <string name="dialog_push_permission_button_allow_text">Позволи</string>
     <string name="dialog_push_permission_button_go_to_settings_text">Отидете на настройките</string>
 
+    <string name="service_notification_title">Следим на състоянието на батерията</string>
+    <string name="service_notification_text">Тук ще получавате известия за състоянието на батерията.</string>
+
     <string name="notification_title_battery_above_80">Нивото на батерията е над 80%</string>
     <string name="notification_text_battery_above_80">Можете да спрете да зареждате телефона си сега.</string>
     <string name="notification_title_battery_below_60">Нивото на батерията е под 60%</string>

@@ -103,6 +103,22 @@ object NotificationUtil {
         return true
     }
 
+    fun dismissNotification(
+        context: Context,
+        notification: NotificationType
+    ) {
+        NotificationManagerCompat.from(context).cancel(notification.notificationId)
+    }
+
+    fun dismissNotifications(
+        context: Context,
+        vararg notifications: NotificationType
+    ) {
+        with(NotificationManagerCompat.from(context)) {
+            notifications.forEach { cancel(it.notificationId) }
+        }
+    }
+
     private fun hasNotificationPermission(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(

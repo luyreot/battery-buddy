@@ -8,6 +8,8 @@ import android.os.Build
 import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.data.SharedPrefs
 import com.teoryul.batterybuddy.model.NotificationType
+import com.teoryul.batterybuddy.util.NotificationUtil.dismissNotification
+import com.teoryul.batterybuddy.util.NotificationUtil.dismissNotifications
 import com.teoryul.batterybuddy.util.NotificationUtil.sendNotification
 
 class PowerConnectionReceiver : BroadcastReceiver() {
@@ -16,7 +18,7 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         if (context == null || intent?.action == null) return
 
         handleActionBatteryChanged(context, intent)
-        handleActionSkip10Pct(intent)
+        handleActionSkip10Pct(context, intent)
     }
 
     private fun handleActionBatteryChanged(context: Context, intent: Intent) {
@@ -61,6 +63,14 @@ class PowerConnectionReceiver : BroadcastReceiver() {
 
         val batteryLvlInt: Int = batteryLvl.toInt()
         val isPhonePluggedIn: Boolean = acCharge || usbCharge || wirelessCharge || dockCharge
+
+        if (batteryLvlInt < 80 && statusCharging && isPhonePluggedIn) {
+            dismissNotifications(
+                context,
+                NotificationType.BELOW_60,
+                NotificationType.BELOW_20
+            )
+        }
 
         val notifyAtBatteryLvl: Int = SharedPrefs.getNotifyAtBatteryLvl()
         // Notify at the calculated battery level if it was previously saved
@@ -139,8 +149,8 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         }
     }
 
-    private fun handleActionSkip10Pct(intent: Intent) {
-        if (intent.action != INTENT_ACTION_SKIP_10_PCT ||
+    private fun handleActionSkip10Pct(context: Context, intent: Intent) {
+        if (intent.action != INTENT_ACTION_SKIP_10_PCT &&
             intent.action != INTENT_ACTION_SKIP_5_PCT
         ) {
             return
@@ -150,10 +160,12 @@ class PowerConnectionReceiver : BroadcastReceiver() {
 
         if (intent.action == INTENT_ACTION_SKIP_10_PCT) {
             SharedPrefs.saveNotifyAtBatteryLvl(lastNotifiedBatteryPct - 10)
+            dismissNotification(context, NotificationType.BELOW_60)
             return
         }
 
         SharedPrefs.saveNotifyAtBatteryLvl(lastNotifiedBatteryPct - 5)
+        dismissNotification(context, NotificationType.BELOW_60)
     }
 
     companion object {
