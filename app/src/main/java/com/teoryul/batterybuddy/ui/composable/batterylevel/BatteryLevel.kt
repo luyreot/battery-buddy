@@ -27,11 +27,12 @@ import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.unit.IntSize
 import com.teoryul.batterybuddy.ui.composable.batterylevel.canvas.drawLevels
 import com.teoryul.batterybuddy.ui.composable.batterylevel.canvas.drawTextWithBlendMode
-import com.teoryul.batterybuddy.ui.composable.batterylevel.text.createTextParamsAsState
 import com.teoryul.batterybuddy.ui.composable.batterylevel.level.BatteryLvlText
 import com.teoryul.batterybuddy.ui.composable.batterylevel.level.LvlParams
 import com.teoryul.batterybuddy.ui.composable.batterylevel.level.createAnimationsAsState
-import com.teoryul.batterybuddy.ui.theme.BatteryLvlBackground
+import com.teoryul.batterybuddy.ui.composable.batterylevel.text.createTextParamsAsState
+import com.teoryul.batterybuddy.ui.theme.BatteryLvlForeground
+import com.teoryul.batterybuddy.ui.theme.ScreenBackground
 
 @Composable
 fun BatteryLvlLayout(
@@ -127,7 +128,7 @@ fun LvlDrawing(
 
     Canvas(
         modifier = Modifier
-            .background(BatteryLvlBackground)
+            .background(ScreenBackground)
             .fillMaxSize()
     ) {
         drawLevels(paths)

@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.teoryul.batterybuddy.R
 
 @Composable
-fun App() {
+fun AppUi() {
     Scaffold { innerPadding ->
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             RequestPushPermission(

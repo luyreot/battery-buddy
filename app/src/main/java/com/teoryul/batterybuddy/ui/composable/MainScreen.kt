@@ -6,7 +6,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -34,7 +33,6 @@ fun MainScreen(modifier: Modifier = Modifier) {
             modifier = Modifier,
             align = Alignment.Center,
             textStyle = TextStyle(
-                color = Color.Black,
                 fontSize = 80.sp,
                 fontWeight = FontWeight.Bold
             ),

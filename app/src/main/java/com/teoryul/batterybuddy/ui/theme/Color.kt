@@ -11,5 +11,8 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 // TODO change
-val BatteryLvlBackground = Color(0xff58e2ff)
-val Blue = Color(0xFF3289a7)
+val ScreenBackground = Color(0xFFA4D24E)
+val BatteryLvlBackground = Color(0xFFF7BC00)
+val BatteryLvlForeground = Color(0xFF275143)
+val BatteryLvlText = Color(0xFFFFF7F7)
+val Extra = Color(0xFFFEAF88)
