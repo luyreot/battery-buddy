@@ -41,7 +41,7 @@ class BatteryUpdatesService : Service() {
             NOTIFICATION_ID,
             createNotification(),
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
             } else {
                 0
             }
@@ -69,8 +69,8 @@ class BatteryUpdatesService : Service() {
 
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, CHANNEL_ID_FOREGROUND_SERVICE)
-            .setContentTitle(this.getString(R.string.service_notification_title))
-            .setContentText(this.getString(R.string.service_notification_text))
+            .setContentTitle(getString(R.string.service_notification_title))
+            .setContentText(getString(R.string.service_notification_text))
             .setSmallIcon(R.drawable.ic_notification)
             .build()
     }
