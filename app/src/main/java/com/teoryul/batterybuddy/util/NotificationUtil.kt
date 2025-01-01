@@ -20,24 +20,52 @@ import com.teoryul.batterybuddy.ui.activity.MainActivity
 
 object NotificationUtil {
 
-    const val CHANNEL_NAME = "Battery Status"
-    const val CHANNEL_DESCRIPTION = "Receive battery status notifications"
-    const val CHANNEL_ID = "battery_status"
+    const val CHANNEL_ID_FOREGROUND_SERVICE = "battery_monitor_service"
+    private const val CHANNEL_ID_BATTERY_STATUS = "battery_status"
 
-    fun createNotificationChannel(context: Context) {
+    fun createBatteryMonitorNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             return
         }
 
-        NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
-            .apply {
-                description = CHANNEL_DESCRIPTION
-                enableVibration(true)
-            }
-            .let { channel ->
-                getSystemService(context, NotificationManager::class.java)
-                    ?.createNotificationChannel(channel)
-            }
+        val name = context.getString(R.string.notification_channel_name_foreground_service)
+        val desc = context.getString(R.string.notification_channel_description_foreground_service)
+
+        NotificationChannel(
+            CHANNEL_ID_FOREGROUND_SERVICE,
+            name,
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = desc
+        }.let { channel ->
+            getSystemService(
+                context,
+                NotificationManager::class.java
+            )?.createNotificationChannel(channel)
+        }
+    }
+
+    fun createBatteryStatusNotificationChannel(context: Context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
+        }
+
+        val name = context.getString(R.string.notification_channel_name_battery_status)
+        val desc = context.getString(R.string.notification_channel_description_battery_status)
+
+        NotificationChannel(
+            CHANNEL_ID_BATTERY_STATUS,
+            name,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = desc
+            enableVibration(true)
+        }.let { channel ->
+            getSystemService(
+                context,
+                NotificationManager::class.java
+            )?.createNotificationChannel(channel)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -47,7 +75,7 @@ object NotificationUtil {
     ): Boolean {
         if (!hasNotificationPermission(context)) return false
 
-        val builder = NotificationCompat.Builder(context, CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ID_BATTERY_STATUS)
             .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(context.getString(notificationType.titleStringRes))
             .setContentText(context.getString(notificationType.textStringRes))

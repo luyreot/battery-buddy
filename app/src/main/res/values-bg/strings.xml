@@ -6,8 +6,13 @@
     <string name="dialog_push_permission_button_allow_text">Позволи</string>
     <string name="dialog_push_permission_button_go_to_settings_text">Отидете на настройките</string>
 
-    <string name="service_notification_title">Следим на състоянието на батерията</string>
-    <string name="service_notification_text">Тук ще получавате известия за състоянието на батерията.</string>
+    <string name="notification_channel_name_foreground_service">Услуга за наблюдение на батерията</string>
+    <string name="notification_channel_description_foreground_service">Получавайте известия, ако и когато услугата за наблюдение на батерията е активна</string>
+    <string name="notification_channel_name_battery_status">Известия на състоянието на батерията</string>
+    <string name="notification_channel_description_battery_status">Получавайте известия за текущия процент на батерията, здравето и друга полезна информация</string>
+
+    <string name="service_notification_title">Наблюдение на състоянието на батерията</string>
+    <string name="service_notification_text">Активно наблюдение на процента и здравето на батерията.</string>
 
     <string name="notification_title_battery_above_80">Нивото на батерията е над 80%</string>
     <string name="notification_text_battery_above_80">Можете да спрете да зареждате телефона си сега.</string>
@@ -21,5 +26,4 @@
     <string name="notification_text_battery_health_overheat">Спрете да зареждате телефона си или евентуално го изключете, за да охладите батерията.</string>
     <string name="notification_title_battery_health_overheat_not">Батерията вече не прегрява</string>
     <string name="notification_text_battery_health_overheat_not">Можете да изчакате още малко или да започнете да използвате телефона си отново, но следете температурата му.</string>
-
 </resources>

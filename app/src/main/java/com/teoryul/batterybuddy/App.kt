@@ -2,7 +2,8 @@ package com.teoryul.batterybuddy
 
 import android.app.Application
 import com.teoryul.batterybuddy.data.SharedPrefs
-import com.teoryul.batterybuddy.util.NotificationUtil.createNotificationChannel
+import com.teoryul.batterybuddy.util.NotificationUtil.createBatteryMonitorNotificationChannel
+import com.teoryul.batterybuddy.util.NotificationUtil.createBatteryStatusNotificationChannel
 
 class App : Application() {
 
@@ -10,6 +11,7 @@ class App : Application() {
         super.onCreate()
 
         SharedPrefs.init(this)
-        createNotificationChannel(this)
+        createBatteryMonitorNotificationChannel(this)
+        createBatteryStatusNotificationChannel(this)
     }
 }

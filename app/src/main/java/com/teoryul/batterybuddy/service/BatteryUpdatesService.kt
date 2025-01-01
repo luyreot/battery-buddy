@@ -13,7 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import com.teoryul.batterybuddy.R
 import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver
-import com.teoryul.batterybuddy.util.NotificationUtil.CHANNEL_ID
+import com.teoryul.batterybuddy.util.NotificationUtil.CHANNEL_ID_FOREGROUND_SERVICE
 
 class BatteryUpdatesService : Service() {
 
@@ -49,14 +49,6 @@ class BatteryUpdatesService : Service() {
         return START_STICKY
     }
 
-    private fun createNotification(): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle(this.getString(R.string.service_notification_title))
-            .setContentText(this.getString(R.string.service_notification_text))
-            .setSmallIcon(R.drawable.ic_notification)
-            .build()
-    }
-
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     private fun registerReceiverActionBatteryChanged() {
         IntentFilter(Intent.ACTION_BATTERY_CHANGED).let { intentFilter ->
@@ -73,6 +65,14 @@ class BatteryUpdatesService : Service() {
                 )
             }
         }
+    }
+
+    private fun createNotification(): Notification {
+        return NotificationCompat.Builder(this, CHANNEL_ID_FOREGROUND_SERVICE)
+            .setContentTitle(this.getString(R.string.service_notification_title))
+            .setContentText(this.getString(R.string.service_notification_text))
+            .setSmallIcon(R.drawable.ic_notification)
+            .build()
     }
 
     inner class LocalBinder : Binder() {
