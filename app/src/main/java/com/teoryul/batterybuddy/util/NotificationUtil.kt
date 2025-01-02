@@ -16,6 +16,11 @@ import androidx.core.content.ContextCompat.getSystemService
 import com.teoryul.batterybuddy.R
 import com.teoryul.batterybuddy.model.NotificationType
 import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver
+import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver.Companion.INTENT_ACTION_CLICK_NOTIFICATION
+import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver.Companion.INTENT_ACTION_DELETE_NOTIFICATION
+import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver.Companion.INTENT_ACTION_SKIP_10_PCT
+import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver.Companion.INTENT_ACTION_SKIP_5_PCT
+import com.teoryul.batterybuddy.receiver.PowerConnectionReceiver.Companion.INTENT_EXTRA_NOTIFICATION_TYPE
 import com.teoryul.batterybuddy.ui.activity.MainActivity
 
 object NotificationUtil {
@@ -82,24 +87,37 @@ object NotificationUtil {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAllowSystemGeneratedContextualActions(false)
+            .setAutoCancel(true)
             .setContentIntent(
                 PendingIntent.getActivity(
                     context,
                     0,
                     Intent(context, MainActivity::class.java).apply {
                         flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        action = INTENT_ACTION_CLICK_NOTIFICATION
+                        putExtra(INTENT_EXTRA_NOTIFICATION_TYPE, notificationType.name)
                     },
                     PendingIntent.FLAG_IMMUTABLE
                 )
             )
-            .setAutoCancel(true)
+            .setDeleteIntent(
+                PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    Intent(context, PowerConnectionReceiver::class.java).apply {
+                        action = INTENT_ACTION_DELETE_NOTIFICATION
+                        putExtra(INTENT_EXTRA_NOTIFICATION_TYPE, notificationType.name)
+                    },
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            )
 
         if (notificationType == NotificationType.BELOW_60) {
             val skip10PctPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,
                 Intent(context, PowerConnectionReceiver::class.java).apply {
-                    action = PowerConnectionReceiver.INTENT_ACTION_SKIP_10_PCT
+                    action = INTENT_ACTION_SKIP_10_PCT
                 },
                 PendingIntent.FLAG_IMMUTABLE
             )
@@ -107,7 +125,7 @@ object NotificationUtil {
                 context,
                 0,
                 Intent(context, PowerConnectionReceiver::class.java).apply {
-                    action = PowerConnectionReceiver.INTENT_ACTION_SKIP_5_PCT
+                    action = INTENT_ACTION_SKIP_5_PCT
                 },
                 PendingIntent.FLAG_IMMUTABLE
             )

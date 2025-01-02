@@ -5,11 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
-import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.data.SharedPrefs
+import com.teoryul.batterybuddy.data.SharedPrefs.putNotifyAtBatteryLvl
+import com.teoryul.batterybuddy.domain.BatteryStatusUseCase
 import com.teoryul.batterybuddy.model.NotificationType
 import com.teoryul.batterybuddy.util.NotificationUtil.dismissNotification
-import com.teoryul.batterybuddy.util.NotificationUtil.dismissNotifications
 import com.teoryul.batterybuddy.util.NotificationUtil.sendNotification
 
 class PowerConnectionReceiver : BroadcastReceiver() {
@@ -19,6 +19,7 @@ class PowerConnectionReceiver : BroadcastReceiver() {
 
         handleActionBatteryChanged(context, intent)
         handleActionSkip10Pct(context, intent)
+        handleActionDeleteNotification(context, intent)
     }
 
     private fun handleActionBatteryChanged(context: Context, intent: Intent) {
@@ -53,99 +54,52 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         //val healthUnspecifiedFailure: Boolean = health == BatteryManager.BATTERY_HEALTH_UNSPECIFIED_FAILURE
         //val healthCold: Boolean = health == BatteryManager.BATTERY_HEALTH_COLD
 
-        val batteryLvl: Float = intent.let {
-            val level: Int = it.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
-            val scale: Int = it.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
-            level * 100 / scale.toFloat()
-        }
+        val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
+        val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
 
-        BatteryStats.batteryLvl.floatValue = batteryLvl
+        val result = BatteryStatusUseCase.onStatusChanged(
+            level = level,
+            scale = scale,
+            statusCharging = statusCharging,
+            statusDischarging = statusDischarging,
+            statusNotCharging = statusNotCharging,
+            acCharge = acCharge,
+            usbCharge = usbCharge,
+            wirelessCharge = wirelessCharge,
+            dockCharge = dockCharge,
+            healthOverheat = healthOverheat
+        )
 
-        val batteryLvlInt: Int = batteryLvl.toInt()
-        val isPhonePluggedIn: Boolean = acCharge || usbCharge || wirelessCharge || dockCharge
-
-        if (batteryLvlInt < 80 && statusCharging && isPhonePluggedIn) {
-            dismissNotifications(
-                context,
-                NotificationType.BELOW_60,
-                NotificationType.BELOW_20
-            )
-        }
-
-        val notifyAtBatteryLvl: Int = SharedPrefs.getNotifyAtBatteryLvl()
-        // Notify at the calculated battery level if it was previously saved
-        if (notifyAtBatteryLvl != -1) {
-            if (batteryLvlInt > notifyAtBatteryLvl) {
-                if (isPhonePluggedIn) {
-                    // Remove cached data if current battery lvl is above the cached one
-                    SharedPrefs.clearNotifyAtBatteryLvl()
-                    SharedPrefs.clearLastNotifiedLvl()
-                } else {
-                    // Wait until current battery level reaches the cached one
-                    return
-                }
-            } else {
-                // Battery lvl reached the cached one.
-                // Clear data and continue with the notifications below.
-                SharedPrefs.clearNotifyAtBatteryLvl()
-                SharedPrefs.clearLastNotifiedLvl()
+        when (result) {
+            BatteryStatusUseCase.BatteryStatus.NoStatus -> {
+                // Not used
             }
-        }
 
-        val lastNotifiedBatteryLvl: Int = SharedPrefs.getLastNotifiedLvl()
-        // Do not notify if the current battery lvl is the same as the one we previously notified for
-        if (batteryLvlInt == lastNotifiedBatteryLvl) {
-            return
-        } else {
-            SharedPrefs.clearLastNotifiedLvl()
-            if (healthOverheat) {
-                SharedPrefs.setDidNotifyBatteryOverheat(false)
-            }
-        }
-
-        val didNotifyOverheat: Boolean = SharedPrefs.getDidNotifyBatteryOverheat()
-        if (healthOverheat) {
-            if (!didNotifyOverheat && sendNotification(context, NotificationType.OVERHEAT)) {
-                SharedPrefs.setDidNotifyBatteryOverheat(true)
-            }
-        } else {
-            if (didNotifyOverheat) {
-                sendNotification(context, NotificationType.OVERHEAT_NOT)
-            }
-            SharedPrefs.setDidNotifyBatteryOverheat(false)
-        }
-
-        // Notify when:
-        // 1. battery lvl is 80 or more
-        // 2. battery is charging or not charging
-        // 3. phone is plugged in
-        if (batteryLvlInt >= 80 &&
-            (statusCharging || statusNotCharging) &&
-            isPhonePluggedIn
-        ) {
-            if (sendNotification(context, NotificationType.ABOVE_80)) {
-                SharedPrefs.saveLastNotifiedLvl(batteryLvlInt)
-            }
-            return
-        }
-
-        // Notify when:
-        // 1. battery lvl is 60 or less
-        // 2. battery is charging
-        // 3. phone is not plugged in
-        if (batteryLvlInt <= 60 &&
-            statusDischarging &&
-            !isPhonePluggedIn
-        ) {
-            val didNotify: Boolean = if (batteryLvlInt <= 20) {
+            BatteryStatusUseCase.BatteryStatus.Charge20 -> {
                 sendNotification(context, NotificationType.BELOW_20)
-            } else {
+            }
+
+            BatteryStatusUseCase.BatteryStatus.Charge60 -> {
                 sendNotification(context, NotificationType.BELOW_60)
             }
-            if (didNotify) {
-                SharedPrefs.saveLastNotifiedLvl(batteryLvlInt)
+
+            BatteryStatusUseCase.BatteryStatus.DismissBatteryLvlNotification -> {
+                dismissNotification(context, NotificationType.ABOVE_80)
+                dismissNotification(context, NotificationType.BELOW_60)
+                dismissNotification(context, NotificationType.BELOW_20)
             }
-            return
+
+            BatteryStatusUseCase.BatteryStatus.Overheating -> {
+                sendNotification(context, NotificationType.OVERHEAT)
+            }
+
+            BatteryStatusUseCase.BatteryStatus.StoppedOverheating -> {
+                sendNotification(context, NotificationType.OVERHEAT_NOT)
+            }
+
+            BatteryStatusUseCase.BatteryStatus.StopCharging -> {
+                sendNotification(context, NotificationType.ABOVE_80)
+            }
         }
     }
 
@@ -156,20 +110,32 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             return
         }
 
-        val lastNotifiedBatteryPct: Int = SharedPrefs.getLastNotifiedLvl()
+        val cachedBatteryLvl = SharedPrefs.getBatteryLvl()
+        val cache = SharedPrefs.cache()
 
         if (intent.action == INTENT_ACTION_SKIP_10_PCT) {
-            SharedPrefs.saveNotifyAtBatteryLvl(lastNotifiedBatteryPct - 10)
+            cache.putNotifyAtBatteryLvl(cachedBatteryLvl - 10).apply()
             dismissNotification(context, NotificationType.BELOW_60)
             return
         }
 
-        SharedPrefs.saveNotifyAtBatteryLvl(lastNotifiedBatteryPct - 5)
+        cache.putNotifyAtBatteryLvl(cachedBatteryLvl - 5).apply()
         dismissNotification(context, NotificationType.BELOW_60)
     }
 
+    private fun handleActionDeleteNotification(context: Context, intent: Intent) {
+        if (intent.action != INTENT_ACTION_DELETE_NOTIFICATION) return
+
+        //val notificationType = intent.getStringExtra(INTENT_EXTRA_NOTIFICATION_TYPE)
+    }
+
     companion object {
+        const val INTENT_ACTION_CLICK_NOTIFICATION = "INTENT_ACTION_CLICK_NOTIFICATION"
+        const val INTENT_ACTION_DELETE_NOTIFICATION = "INTENT_ACTION_DELETE_NOTIFICATION"
+
         const val INTENT_ACTION_SKIP_10_PCT = "INTENT_ACTION_SKIP_10_PCT"
         const val INTENT_ACTION_SKIP_5_PCT = "INTENT_ACTION_SKIP_5_PCT"
+
+        const val INTENT_EXTRA_NOTIFICATION_TYPE = "INTENT_EXTRA_NOTIFICATION_TYPE"
     }
 }
