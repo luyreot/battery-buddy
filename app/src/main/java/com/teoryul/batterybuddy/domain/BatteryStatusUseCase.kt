@@ -2,16 +2,24 @@ package com.teoryul.batterybuddy.domain
 
 import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.data.SharedPrefs
-import com.teoryul.batterybuddy.data.SharedPrefs.clearNotifyAtBatteryLvl
-import com.teoryul.batterybuddy.data.SharedPrefs.putBatteryLvl
-import com.teoryul.batterybuddy.data.SharedPrefs.putBatteryOverheat
+import com.teoryul.batterybuddy.data.clearNotifyAtBatteryLvl
+import com.teoryul.batterybuddy.data.putBatteryLvl
+import com.teoryul.batterybuddy.data.putBatteryOverheat
 
-object BatteryStatusUseCase {
+class BatteryStatusUseCase(
+    private val sharedPrefs: SharedPrefs,
+    private val batteryStats: BatteryStats
+) {
 
-    const val BATTERY_LEVEL_CHARGED: Int = 80
-    const val BATTERY_LEVEL_COULD_CHARGE: Int = 60
-    const val BATTERY_LEVEL_MUST_CHARGE: Int = 20
+    private companion object {
+        const val BATTERY_LEVEL_CHARGED: Int = 80
+        const val BATTERY_LEVEL_COULD_CHARGE: Int = 60
+        const val BATTERY_LEVEL_MUST_CHARGE: Int = 20
+    }
 
+    /**
+     * Test with [level] being the actual battery level and [scale] of 100.
+     */
     fun onStatusChanged(
         level: Int,
         scale: Int,
@@ -25,14 +33,14 @@ object BatteryStatusUseCase {
         healthOverheat: Boolean
     ): BatteryStatus {
         val batteryLvl = (level * 100 / scale.toFloat()).toInt()
-        val didBatteryLvlChange = batteryLvl != SharedPrefs.getBatteryLvl()
+        val didBatteryLvlChange = batteryLvl != sharedPrefs.getBatteryLvl()
 
-        BatteryStats.batteryLvlInt = batteryLvl
+        batteryStats.batteryLvlInt = batteryLvl
 
-        val cache = SharedPrefs.cache()
+        val cache = sharedPrefs.cache()
 
         // Overheating
-        val didOverheat = SharedPrefs.getBatteryOverheat()
+        val didOverheat = sharedPrefs.getBatteryOverheat()
         if (healthOverheat && !didOverheat) {
             cache.putBatteryOverheat(true)
             cache.clearNotifyAtBatteryLvl()
@@ -98,7 +106,7 @@ object BatteryStatusUseCase {
 
         // > 20% && <= 60%
         if (!isPluggedIn && statusDischarging) {
-            val notifyAtBatteryLvl: Int = SharedPrefs.getNotifyAtBatteryLvl()
+            val notifyAtBatteryLvl: Int = sharedPrefs.getNotifyAtBatteryLvl()
             if (notifyAtBatteryLvl != -1) {
                 if (batteryLvl <= notifyAtBatteryLvl) {
                     cache.clearNotifyAtBatteryLvl()

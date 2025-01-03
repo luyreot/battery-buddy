@@ -13,6 +13,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.teoryul.batterybuddy.data.BatteryStats
+import com.teoryul.batterybuddy.di.Injector.get
 import com.teoryul.batterybuddy.service.BatteryUpdatesService
 import com.teoryul.batterybuddy.ui.composable.batterylevel.BatteryLvlLayout
 import com.teoryul.batterybuddy.ui.composable.batterylevel.level.BatteryLvlText
@@ -22,11 +23,12 @@ import com.teoryul.batterybuddy.ui.composable.batterylevel.level.LvlParams
 fun MainScreen(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     context.startForegroundService(Intent(context, BatteryUpdatesService::class.java))
+    val batteryStats: BatteryStats by lazy { get() }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp
     val levelGap = 30
     val points = remember { screenWidth / levelGap }
-    val batteryLvl by remember { BatteryStats.batteryLvl }
+    val batteryLvl by remember { batteryStats.batteryLvl }
     BatteryLvlLayout(
         modifier = Modifier.fillMaxSize(), // Not using the modifier param in order to fill the whole screen
         lvlDropDurationInMills = 1500L, // TODO calculate the speed based on the missing battery %

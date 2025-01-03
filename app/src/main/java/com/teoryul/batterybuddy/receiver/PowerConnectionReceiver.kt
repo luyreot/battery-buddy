@@ -6,13 +6,17 @@ import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
 import com.teoryul.batterybuddy.data.SharedPrefs
-import com.teoryul.batterybuddy.data.SharedPrefs.putNotifyAtBatteryLvl
+import com.teoryul.batterybuddy.data.putNotifyAtBatteryLvl
+import com.teoryul.batterybuddy.di.Injector.get
 import com.teoryul.batterybuddy.domain.BatteryStatusUseCase
 import com.teoryul.batterybuddy.model.NotificationType
 import com.teoryul.batterybuddy.util.NotificationUtil.dismissNotification
 import com.teoryul.batterybuddy.util.NotificationUtil.sendNotification
 
 class PowerConnectionReceiver : BroadcastReceiver() {
+
+    private val sharedPrefs: SharedPrefs by lazy { get() }
+    private val batteryStatus: BatteryStatusUseCase by lazy { get() }
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null || intent?.action == null) return
@@ -57,7 +61,7 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         val level: Int = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)
         val scale: Int = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1)
 
-        val result = BatteryStatusUseCase.onStatusChanged(
+        val result = batteryStatus.onStatusChanged(
             level = level,
             scale = scale,
             statusCharging = statusCharging,
@@ -110,8 +114,8 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             return
         }
 
-        val cachedBatteryLvl = SharedPrefs.getBatteryLvl()
-        val cache = SharedPrefs.cache()
+        val cachedBatteryLvl = sharedPrefs.getBatteryLvl()
+        val cache = sharedPrefs.cache()
 
         if (intent.action == INTENT_ACTION_SKIP_10_PCT) {
             cache.putNotifyAtBatteryLvl(cachedBatteryLvl - 10).apply()
