@@ -33,7 +33,6 @@ class BatteryStatusUseCase(
         val didBatteryLvlChange = batteryLvl != sharedPrefs.getBatteryLvl()
 
         batteryStats.batteryLvlInt = batteryLvl
-
         sharedPrefs.putBatteryLvl(batteryLvl)
 
         // Overheating
@@ -55,53 +54,54 @@ class BatteryStatusUseCase(
 
         val isPluggedIn = acCharge || usbCharge || wirelessCharge || dockCharge
 
-        // >= 80%
-        if (batteryLvl >= BATTERY_LEVEL_CHARGED) {
-            sharedPrefs.clearNotifyAtBatteryLvl()
-            if (isPluggedIn && (statusCharging || statusNotCharging) && didBatteryLvlChange) {
-                return BatteryStatus.StopCharging
-            }
-            if (!isPluggedIn && statusDischarging) {
+        // Battery draining
+        if (!isPluggedIn && statusDischarging) {
+            // > 60%
+            if (batteryLvl > BATTERY_LEVEL_COULD_CHARGE) {
+                sharedPrefs.clearNotifyAtBatteryLvl()
                 return BatteryStatus.DismissBatteryLvlNotification
             }
         }
 
         // No notification updates if battery lvl did not change
         if (!didBatteryLvlChange) {
-            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.NoStatus
         }
 
-        // > 60%
-        if (batteryLvl > BATTERY_LEVEL_COULD_CHARGE) {
+        // Battery charging
+        if (isPluggedIn && (statusCharging || statusNotCharging)) {
             sharedPrefs.clearNotifyAtBatteryLvl()
+
+            // >= 80%
+            if (batteryLvl >= BATTERY_LEVEL_CHARGED) {
+                return BatteryStatus.StopCharging
+            }
+
+            // < 80%
             return BatteryStatus.DismissBatteryLvlNotification
         }
 
-        // <= 60%
-        if (isPluggedIn && statusCharging) {
-            sharedPrefs.clearNotifyAtBatteryLvl()
-            return BatteryStatus.DismissBatteryLvlNotification
-        }
-
-        // <= 20%
-        if (batteryLvl <= BATTERY_LEVEL_MUST_CHARGE) {
-            sharedPrefs.clearNotifyAtBatteryLvl()
-            return BatteryStatus.Charge20
-        }
-
-        // > 20% && <= 60%
+        // Battery draining
         if (!isPluggedIn && statusDischarging) {
+            // < 20%
+            if (batteryLvl < BATTERY_LEVEL_MUST_CHARGE) {
+                sharedPrefs.clearNotifyAtBatteryLvl()
+                return BatteryStatus.Charge20
+            }
+
+            // <= 60% && >= 20%
+
             val notifyAtBatteryLvl: Int = sharedPrefs.getNotifyAtBatteryLvl()
-            if (notifyAtBatteryLvl != -1) {
-                if (batteryLvl <= notifyAtBatteryLvl) {
-                    sharedPrefs.clearNotifyAtBatteryLvl()
-                    return BatteryStatus.Charge60
-                }
-            } else {
+            if (notifyAtBatteryLvl == -1) {
+                return BatteryStatus.Charge60
+            }
+
+            if (batteryLvl <= notifyAtBatteryLvl) {
                 sharedPrefs.clearNotifyAtBatteryLvl()
                 return BatteryStatus.Charge60
             }
+
+            return BatteryStatus.NoStatus
         }
 
         return BatteryStatus.NoStatus

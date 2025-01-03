@@ -79,10 +79,14 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             }
 
             BatteryStatusUseCase.BatteryStatus.Charge20 -> {
+                dismissNotification(context, NotificationType.ABOVE_80)
+                dismissNotification(context, NotificationType.BELOW_60)
                 sendNotification(context, NotificationType.BELOW_20)
             }
 
             BatteryStatusUseCase.BatteryStatus.Charge60 -> {
+                dismissNotification(context, NotificationType.ABOVE_80)
+                dismissNotification(context, NotificationType.BELOW_20)
                 sendNotification(context, NotificationType.BELOW_60)
             }
 
@@ -93,14 +97,22 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             }
 
             BatteryStatusUseCase.BatteryStatus.Overheating -> {
+                dismissNotification(context, NotificationType.ABOVE_80)
+                dismissNotification(context, NotificationType.BELOW_60)
+                dismissNotification(context, NotificationType.BELOW_20)
                 sendNotification(context, NotificationType.OVERHEAT)
             }
 
             BatteryStatusUseCase.BatteryStatus.StoppedOverheating -> {
+                dismissNotification(context, NotificationType.ABOVE_80)
+                dismissNotification(context, NotificationType.BELOW_60)
+                dismissNotification(context, NotificationType.BELOW_20)
                 sendNotification(context, NotificationType.OVERHEAT_NOT)
             }
 
             BatteryStatusUseCase.BatteryStatus.StopCharging -> {
+                dismissNotification(context, NotificationType.BELOW_60)
+                dismissNotification(context, NotificationType.BELOW_20)
                 sendNotification(context, NotificationType.ABOVE_80)
             }
         }
