@@ -2,9 +2,6 @@ package com.teoryul.batterybuddy.domain
 
 import com.teoryul.batterybuddy.data.BatteryStats
 import com.teoryul.batterybuddy.data.SharedPrefs
-import com.teoryul.batterybuddy.data.clearNotifyAtBatteryLvl
-import com.teoryul.batterybuddy.data.putBatteryLvl
-import com.teoryul.batterybuddy.data.putBatteryOverheat
 
 class BatteryStatusUseCase(
     private val sharedPrefs: SharedPrefs,
@@ -37,20 +34,18 @@ class BatteryStatusUseCase(
 
         batteryStats.batteryLvlInt = batteryLvl
 
-        val cache = sharedPrefs.cache()
+        sharedPrefs.putBatteryLvl(batteryLvl)
 
         // Overheating
         val didOverheat = sharedPrefs.getBatteryOverheat()
         if (healthOverheat && !didOverheat) {
-            cache.putBatteryOverheat(true)
-            cache.clearNotifyAtBatteryLvl()
-            cache.apply()
+            sharedPrefs.putBatteryOverheat(true)
+            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.Overheating
         }
         if (!healthOverheat && didOverheat) {
-            cache.putBatteryOverheat(false)
-            cache.clearNotifyAtBatteryLvl()
-            cache.apply()
+            sharedPrefs.putBatteryOverheat(false)
+            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.StoppedOverheating
         }
         // Skip everything until battery is no longer overheating
@@ -62,45 +57,36 @@ class BatteryStatusUseCase(
 
         // >= 80%
         if (batteryLvl >= BATTERY_LEVEL_CHARGED) {
-            cache.clearNotifyAtBatteryLvl()
+            sharedPrefs.clearNotifyAtBatteryLvl()
             if (isPluggedIn && (statusCharging || statusNotCharging) && didBatteryLvlChange) {
-                cache.putBatteryLvl(batteryLvl)
-                cache.apply()
                 return BatteryStatus.StopCharging
             }
             if (!isPluggedIn && statusDischarging) {
-                cache.apply()
                 return BatteryStatus.DismissBatteryLvlNotification
             }
         }
 
         // No notification updates if battery lvl did not change
         if (!didBatteryLvlChange) {
-            cache.clearNotifyAtBatteryLvl()
-            cache.apply()
+            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.NoStatus
         }
 
-        cache.putBatteryLvl(batteryLvl)
-
         // > 60%
         if (batteryLvl > BATTERY_LEVEL_COULD_CHARGE) {
-            cache.clearNotifyAtBatteryLvl()
-            cache.apply()
+            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.DismissBatteryLvlNotification
         }
 
         // <= 60%
         if (isPluggedIn && statusCharging) {
-            cache.clearNotifyAtBatteryLvl()
-            cache.apply()
+            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.DismissBatteryLvlNotification
         }
 
         // <= 20%
         if (batteryLvl <= BATTERY_LEVEL_MUST_CHARGE) {
-            cache.clearNotifyAtBatteryLvl()
-            cache.apply()
+            sharedPrefs.clearNotifyAtBatteryLvl()
             return BatteryStatus.Charge20
         }
 
@@ -109,18 +95,15 @@ class BatteryStatusUseCase(
             val notifyAtBatteryLvl: Int = sharedPrefs.getNotifyAtBatteryLvl()
             if (notifyAtBatteryLvl != -1) {
                 if (batteryLvl <= notifyAtBatteryLvl) {
-                    cache.clearNotifyAtBatteryLvl()
-                    cache.apply()
+                    sharedPrefs.clearNotifyAtBatteryLvl()
                     return BatteryStatus.Charge60
                 }
             } else {
-                cache.clearNotifyAtBatteryLvl()
-                cache.apply()
+                sharedPrefs.clearNotifyAtBatteryLvl()
                 return BatteryStatus.Charge60
             }
         }
 
-        cache.apply()
         return BatteryStatus.NoStatus
     }
 

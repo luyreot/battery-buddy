@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.BatteryManager
 import android.os.Build
 import com.teoryul.batterybuddy.data.SharedPrefs
-import com.teoryul.batterybuddy.data.putNotifyAtBatteryLvl
 import com.teoryul.batterybuddy.di.Injector.get
 import com.teoryul.batterybuddy.domain.BatteryStatusUseCase
 import com.teoryul.batterybuddy.model.NotificationType
@@ -115,15 +114,14 @@ class PowerConnectionReceiver : BroadcastReceiver() {
         }
 
         val cachedBatteryLvl = sharedPrefs.getBatteryLvl()
-        val cache = sharedPrefs.cache()
 
         if (intent.action == INTENT_ACTION_SKIP_10_PCT) {
-            cache.putNotifyAtBatteryLvl(cachedBatteryLvl - 10).apply()
+            sharedPrefs.putNotifyAtBatteryLvl(cachedBatteryLvl - 10)
             dismissNotification(context, NotificationType.BELOW_60)
             return
         }
 
-        cache.putNotifyAtBatteryLvl(cachedBatteryLvl - 5).apply()
+        sharedPrefs.putNotifyAtBatteryLvl(cachedBatteryLvl - 5)
         dismissNotification(context, NotificationType.BELOW_60)
     }
 

@@ -1,26 +1,7 @@
 package com.teoryul.batterybuddy.data
 
 import android.content.SharedPreferences
-import com.teoryul.batterybuddy.data.SharedPrefs.Companion.KEY_BATTERY_LVL
-import com.teoryul.batterybuddy.data.SharedPrefs.Companion.KEY_BATTERY_OVERHEAT
-import com.teoryul.batterybuddy.data.SharedPrefs.Companion.KEY_NOTIFY_AT_BATTERY_LVL
 import com.teoryul.batterybuddy.di.Injector.get
-
-fun SharedPreferences.Editor.putBatteryLvl(value: Int): SharedPreferences.Editor {
-    return putInt(KEY_BATTERY_LVL, value)
-}
-
-fun SharedPreferences.Editor.putBatteryOverheat(value: Boolean): SharedPreferences.Editor {
-    return putBoolean(KEY_BATTERY_OVERHEAT, value)
-}
-
-fun SharedPreferences.Editor.putNotifyAtBatteryLvl(value: Int): SharedPreferences.Editor {
-    return putInt(KEY_NOTIFY_AT_BATTERY_LVL, value)
-}
-
-fun SharedPreferences.Editor.clearNotifyAtBatteryLvl(): SharedPreferences.Editor {
-    return remove(KEY_NOTIFY_AT_BATTERY_LVL)
-}
 
 class SharedPrefs {
 
@@ -32,14 +13,28 @@ class SharedPrefs {
 
     private val sharedPrefs: SharedPreferences by lazy { get() }
 
-    fun cache(): SharedPreferences.Editor = sharedPrefs.edit()
+    fun putBatteryLvl(value: Int) {
+        sharedPrefs.edit().putInt(KEY_BATTERY_LVL, value).apply()
+    }
 
     fun getBatteryLvl(default: Int = -1): Int {
         return sharedPrefs.getInt(KEY_BATTERY_LVL, default)
     }
 
+    fun putBatteryOverheat(value: Boolean) {
+        sharedPrefs.edit().putBoolean(KEY_BATTERY_OVERHEAT, value).apply()
+    }
+
     fun getBatteryOverheat(default: Boolean = false): Boolean {
         return sharedPrefs.getBoolean(KEY_BATTERY_OVERHEAT, default)
+    }
+
+    fun putNotifyAtBatteryLvl(value: Int) {
+        sharedPrefs.edit().putInt(KEY_NOTIFY_AT_BATTERY_LVL, value).apply()
+    }
+
+    fun clearNotifyAtBatteryLvl() {
+        sharedPrefs.edit().remove(KEY_NOTIFY_AT_BATTERY_LVL).apply()
     }
 
     fun getNotifyAtBatteryLvl(default: Int = -1): Int {
