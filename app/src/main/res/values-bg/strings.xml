@@ -14,7 +14,7 @@
     <string name="service_notification_title">Наблюдение на състоянието на батерията</string>
     <string name="service_notification_text">Активно наблюдение на процента и здравето на батерията.</string>
 
-    <string name="notification_title_battery_above_80">Нивото на батерията е над 80%</string>
+    <string name="notification_title_battery_above_80">Батерията е заредена до 80% или повече</string>
     <string name="notification_text_battery_above_80">Можете да спрете да зареждате телефона си сега.</string>
     <string name="notification_title_battery_below_60">Нивото на батерията е под 60%</string>
     <string name="notification_text_battery_below_60">Можете да започнете да зареждате телефона си сега.</string>

@@ -184,8 +184,8 @@ class BatteryStatusUseCaseTest {
     }
 
     @Test
-    fun `no status when unplugged and discharging, battery lvl unchanged and equal or below 60%`() {
-        val level = 60
+    fun `no status when unplugged and discharging, battery lvl unchanged and equal or below 59%`() {
+        val level = 59
         every { sharedPrefs.getBatteryOverheat() } returns false
 
         for (i in 0 until 10) {
@@ -244,6 +244,35 @@ class BatteryStatusUseCaseTest {
             verifyBatteryLevelUpdated(newLevel)
             verify(exactly = i + 1) { sharedPrefs.clearNotifyAtBatteryLvl() }
             assertEquals(BatteryStatus.StopCharging, result)
+        }
+    }
+
+    @Test
+    fun `dismiss notification when plugged and charging or not charging, battery lvl changes and below 80%`() {
+        every { sharedPrefs.getBatteryOverheat() } returns false
+
+        for (newLevel in 1 until 79) {
+            batteryStatsBatteryLvlIntSlot.clear()
+            sharedPrefsBatteryLvlIntSlot.clear()
+
+            every { sharedPrefs.getBatteryLvl() } returns newLevel - 1
+
+            val result = sut.onStatusChanged(
+                level = newLevel,
+                scale = scale,
+                statusCharging = newLevel % 2 == 0,
+                statusDischarging = false,
+                statusNotCharging = newLevel % 2 != 0,
+                acCharge = false,
+                usbCharge = false,
+                wirelessCharge = true,
+                dockCharge = false,
+                healthOverheat = false
+            )
+
+            verifyBatteryLevelUpdated(newLevel)
+            verify(exactly = newLevel) { sharedPrefs.clearNotifyAtBatteryLvl() }
+            assertEquals(BatteryStatus.DismissBatteryLvlNotification, result)
         }
     }
 
@@ -312,10 +341,10 @@ class BatteryStatusUseCaseTest {
     }
 
     @Test
-    fun `charge at 60 when unplugged and discharging, battery lvl changes and between 20% and 60%`() {
+    fun `charge at 60 when unplugged and discharging, battery lvl changes and between 20% and 59%`() {
         every { sharedPrefs.getBatteryOverheat() } returns false
 
-        for (lvl in 60 downTo 20) {
+        for (lvl in 59 downTo 20) {
             batteryStatsBatteryLvlIntSlot.clear()
             sharedPrefsBatteryLvlIntSlot.clear()
 
@@ -342,15 +371,15 @@ class BatteryStatusUseCaseTest {
     }
 
     @Test
-    fun `charge at 60 when unplugged and discharging, battery lvl changes and between 20% and 60% with lvl skip 10`() {
+    fun `charge at 60 when unplugged and discharging, battery lvl changes and between 20% and 59% with lvl skip 10`() {
         every { sharedPrefs.getBatteryOverheat() } returns false
 
-        val lvlStart = 60
-        val notifyAt = 50
+        val lvlStart = 59
+        val notifyAt = 49
 
         every { sharedPrefs.getNotifyAtBatteryLvl() } returns notifyAt
 
-        for (lvl in lvlStart downTo 50) {
+        for (lvl in lvlStart downTo 49) {
             batteryStatsBatteryLvlIntSlot.clear()
             sharedPrefsBatteryLvlIntSlot.clear()
 
@@ -380,4 +409,6 @@ class BatteryStatusUseCaseTest {
             }
         }
     }
+
+
 }
