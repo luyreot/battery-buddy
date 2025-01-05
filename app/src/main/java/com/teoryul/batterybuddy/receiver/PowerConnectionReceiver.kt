@@ -79,41 +79,41 @@ class PowerConnectionReceiver : BroadcastReceiver() {
             }
 
             BatteryStatusUseCase.BatteryStatus.Charge20 -> {
-                dismissNotification(context, NotificationType.ABOVE_80)
-                dismissNotification(context, NotificationType.BELOW_60)
-                sendNotification(context, NotificationType.BELOW_20)
+                dismissNotification(context, NotificationType.REACHED_ABOVE_80)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_60)
+                sendNotification(context, NotificationType.DROPPED_BELOW_20)
             }
 
             BatteryStatusUseCase.BatteryStatus.Charge60 -> {
-                dismissNotification(context, NotificationType.ABOVE_80)
-                dismissNotification(context, NotificationType.BELOW_20)
-                sendNotification(context, NotificationType.BELOW_60)
+                dismissNotification(context, NotificationType.REACHED_ABOVE_80)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_20)
+                sendNotification(context, NotificationType.DROPPED_BELOW_60)
             }
 
             BatteryStatusUseCase.BatteryStatus.DismissBatteryLvlNotification -> {
-                dismissNotification(context, NotificationType.ABOVE_80)
-                dismissNotification(context, NotificationType.BELOW_60)
-                dismissNotification(context, NotificationType.BELOW_20)
+                dismissNotification(context, NotificationType.REACHED_ABOVE_80)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_60)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_20)
             }
 
             BatteryStatusUseCase.BatteryStatus.Overheating -> {
-                dismissNotification(context, NotificationType.ABOVE_80)
-                dismissNotification(context, NotificationType.BELOW_60)
-                dismissNotification(context, NotificationType.BELOW_20)
+                dismissNotification(context, NotificationType.REACHED_ABOVE_80)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_60)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_20)
                 sendNotification(context, NotificationType.OVERHEAT)
             }
 
             BatteryStatusUseCase.BatteryStatus.StoppedOverheating -> {
-                dismissNotification(context, NotificationType.ABOVE_80)
-                dismissNotification(context, NotificationType.BELOW_60)
-                dismissNotification(context, NotificationType.BELOW_20)
+                dismissNotification(context, NotificationType.REACHED_ABOVE_80)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_60)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_20)
                 sendNotification(context, NotificationType.OVERHEAT_NOT)
             }
 
             BatteryStatusUseCase.BatteryStatus.StopCharging -> {
-                dismissNotification(context, NotificationType.BELOW_60)
-                dismissNotification(context, NotificationType.BELOW_20)
-                sendNotification(context, NotificationType.ABOVE_80)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_60)
+                dismissNotification(context, NotificationType.DROPPED_BELOW_20)
+                sendNotification(context, NotificationType.REACHED_ABOVE_80)
             }
         }
     }
@@ -129,12 +129,12 @@ class PowerConnectionReceiver : BroadcastReceiver() {
 
         if (intent.action == INTENT_ACTION_SKIP_10_PCT) {
             sharedPrefs.putNotifyAtBatteryLvl(cachedBatteryLvl - 10)
-            dismissNotification(context, NotificationType.BELOW_60)
+            dismissNotification(context, NotificationType.DROPPED_BELOW_60)
             return
         }
 
         sharedPrefs.putNotifyAtBatteryLvl(cachedBatteryLvl - 5)
-        dismissNotification(context, NotificationType.BELOW_60)
+        dismissNotification(context, NotificationType.DROPPED_BELOW_60)
     }
 
     private fun handleActionDeleteNotification(context: Context, intent: Intent) {

@@ -112,7 +112,7 @@ object NotificationUtil {
                 )
             )
 
-        if (notificationType == NotificationType.BELOW_60) {
+        if (notificationType == NotificationType.DROPPED_BELOW_60) {
             val skip10PctPendingIntent = PendingIntent.getBroadcast(
                 context,
                 0,

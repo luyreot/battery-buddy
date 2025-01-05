@@ -10,21 +10,21 @@ enum class NotificationType(
     val textStringRes: Int,
     val notificationId: Int
 ) {
-    ABOVE_80(
-        titleStringRes = R.string.notification_title_battery_above_80,
-        textStringRes = R.string.notification_text_battery_above_80,
+    REACHED_ABOVE_80(
+        titleStringRes = R.string.notification_title_battery_reached_above_80,
+        textStringRes = R.string.notification_text_battery_reached_above_80,
         notificationId = Int.MIN_VALUE
     ),
 
-    BELOW_60(
-        titleStringRes = R.string.notification_title_battery_below_60,
-        textStringRes = R.string.notification_text_battery_below_60,
+    DROPPED_BELOW_60(
+        titleStringRes = R.string.notification_title_battery_dropped_below_60,
+        textStringRes = R.string.notification_text_battery_dropped_below_60,
         notificationId = Int.MIN_VALUE
     ),
 
-    BELOW_20(
-        titleStringRes = R.string.notification_title_battery_below_20,
-        textStringRes = R.string.notification_text_battery_below_20,
+    DROPPED_BELOW_20(
+        titleStringRes = R.string.notification_title_battery_dropped_below_20,
+        textStringRes = R.string.notification_text_battery_dropped_below_20,
         notificationId = Int.MIN_VALUE
     ),
 

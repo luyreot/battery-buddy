@@ -13,13 +13,13 @@
 
     <string name="service_notification_title">Наблюдение на състоянието на батерията</string>
     <string name="service_notification_text">Активно наблюдение на процента и здравето на батерията.</string>
+    <string name="notification_title_battery_reached_above_80">Нивото на батерията е 80% или повече</string>
+    <string name="notification_text_battery_reached_above_80">Можете да спрете да зареждате телефона си сега.</string>
+    <string name="notification_title_battery_dropped_below_60">Нивото на батерията падна до 60%</string>
+    <string name="notification_text_battery_dropped_below_60">Можете да започнете да зареждате телефона си.</string>
+    <string name="notification_title_battery_dropped_below_20">Нивото на батерията падна до 20%</string>
+    <string name="notification_text_battery_dropped_below_20">Трябва да започнете да зареждате телефона си.</string>
 
-    <string name="notification_title_battery_above_80">Батерията е заредена до 80% или повече</string>
-    <string name="notification_text_battery_above_80">Можете да спрете да зареждате телефона си сега.</string>
-    <string name="notification_title_battery_below_60">Нивото на батерията е под 60%</string>
-    <string name="notification_text_battery_below_60">Можете да започнете да зареждате телефона си сега.</string>
-    <string name="notification_title_battery_below_20">Нивото на батерията е под 20%</string>
-    <string name="notification_text_battery_below_20">Спрете да използвате телефона си сега и да започнете да го зареждате.</string>
     <string name="notification_action_text_skip_10_pct">Напомни след 10%</string>
     <string name="notification_action_text_skip_5_pct">Напомни след 5%</string>
     <string name="notification_title_battery_health_overheat">Батерията прегрява</string>

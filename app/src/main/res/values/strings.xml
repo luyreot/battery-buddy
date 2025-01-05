@@ -13,13 +13,13 @@
 
     <string name="service_notification_title">Monitoring Battery Status</string>
     <string name="service_notification_text">Actively monitoring battery percentage and health.</string>
+    <string name="notification_title_battery_reached_above_80">Battery level is at 80% or more</string>
+    <string name="notification_text_battery_reached_above_80">You can stop charging your phone now.</string>
+    <string name="notification_title_battery_dropped_below_60">Battery level dropped to 60%</string>
+    <string name="notification_text_battery_dropped_below_60">You can start charging your phone.</string>
+    <string name="notification_title_battery_dropped_below_20">Battery level dropped to 20%</string>
+    <string name="notification_text_battery_dropped_below_20">You should start charging your phone now.</string>
 
-    <string name="notification_title_battery_above_80">Battery has been charged to 80% or more</string>
-    <string name="notification_text_battery_above_80">You can stop charging your phone now.</string>
-    <string name="notification_title_battery_below_60">Battery level is below 60%</string>
-    <string name="notification_text_battery_below_60">You can start charging your phone now.</string>
-    <string name="notification_title_battery_below_20">Battery level is below 20%</string>
-    <string name="notification_text_battery_below_20">You should stop using your phone now and start charging it.</string>
     <string name="notification_action_text_skip_10_pct">Notify after 10%</string>
     <string name="notification_action_text_skip_5_pct">Notify after 5%</string>
     <string name="notification_title_battery_health_overheat">Battery is overheating</string>
